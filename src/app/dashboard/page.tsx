@@ -8,7 +8,10 @@ export const dynamic = "force-dynamic";
 
 export default async function Dashboard() {
   const client = await learningClient();
-  const { data, error } = await client.rpc("learning_resume");
+  const [{ data, error }, profile] = await Promise.all([
+    client.rpc("learning_resume"),
+    client.from("profiles").select("role").maybeSingle(),
+  ]);
   const topics: LearningSummary[] = Array.isArray(data) ? data : [];
   const unfinished = topics.filter((topic) => topic.activity_count > topic.completed_count);
   const current = unfinished.reduce<LearningSummary | undefined>((latest, topic) => {
@@ -20,7 +23,10 @@ export default async function Dashboard() {
     <div className="space-y-8">
       <div className="flex flex-wrap items-center justify-between gap-4">
         <h1>My learning</h1>
-        <form action={signOut}><button className="button" type="submit">Sign out</button></form>
+        <div className="flex flex-wrap items-center gap-4">
+          {profile.data?.role === "administrator" && <Link href="/admin">Content admin</Link>}
+          <form action={signOut}><button className="button" type="submit">Sign out</button></form>
+        </div>
       </div>
       {error ? <p role="alert">Learning progress could not be loaded. Please try again.</p> :
         current ? <section className="panel space-y-4" aria-labelledby="current-topic">

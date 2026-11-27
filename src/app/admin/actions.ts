@@ -56,3 +56,47 @@ export async function setContentStatus(kind: string, id: string, form: FormData)
   revalidatePath("/dashboard");
   redirect("/admin?updated=1");
 }
+
+function refreshAccessPages() {
+  revalidatePath("/admin");
+  revalidatePath("/topics", "layout");
+  revalidatePath("/dashboard");
+}
+
+export async function setContentAccess(kind: string, id: string, form: FormData) {
+  const level = form.get("level");
+  if (level !== "free" && level !== "preview" && level !== "restricted") redirect("/admin?failed=1");
+  const client = await learningClient();
+  const { data, error } = await client.rpc("admin_set_access", {
+    resource_kind: kind, resource_id: id, level,
+  });
+  if (error || !data) redirect("/admin?failed=1");
+  refreshAccessPages();
+  redirect("/admin?updated=1");
+}
+
+export async function grantContentAccess(form: FormData) {
+  const learner = String(form.get("learner") ?? "").trim();
+  const [kind, id] = String(form.get("resource") ?? "").split(":");
+  const days = Number(form.get("days") || 0);
+  if (!/^[0-9a-f]{8}(?:-[0-9a-f]{4}){3}-[0-9a-f]{12}$/i.test(learner) || !id ||
+    !["topic", "module", "activity"].includes(kind) || !Number.isInteger(days) || days < 0 || days > 3650) {
+    redirect("/admin?failed=1");
+  }
+  const client = await learningClient();
+  const { data, error } = await client.rpc("admin_grant_access", {
+    learner, resource_kind: kind, resource_id: id,
+    expiration: days ? new Date(Date.now() + days * 86400000).toISOString() : null,
+  });
+  if (error || !data) redirect("/admin?failed=1");
+  refreshAccessPages();
+  redirect("/admin?updated=1");
+}
+
+export async function revokeContentAccess(id: string) {
+  const client = await learningClient();
+  const { data, error } = await client.rpc("admin_revoke_access", { grant_id: id });
+  if (error || !data) redirect("/admin?failed=1");
+  refreshAccessPages();
+  redirect("/admin?updated=1");
+}

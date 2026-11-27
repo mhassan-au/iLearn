@@ -32,6 +32,8 @@ My progress lists topic completion, completed labs, recent quiz results and comp
 
 The protected content editor validates versioned topic JSON, previews its contents and reports which IDs already exist. Imports update matching IDs as drafts and preserve learner records. The content list provides publish, unpublish and archive controls.
 
-## Next milestone
+## Milestone 7
 
-Entitlement management and deployment readiness follow next.
+Content admin supports free, preview and restricted items and manual grants with expiry and revocation. A shared Supabase policy enforces access across catalogue and learner RPCs. The app includes a web manifest and Vercel setup instructions.
+
+All migrations are applied to the hosted iLearn project. A rolled-back database test verified grants, revocation and completion of all seven sample activities in order, including three quiz attempts in My progress. The production build passed. Vercel deployment, a visual mobile/desktop walkthrough and the full Docker-backed pgTAP suite are pending.

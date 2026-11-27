@@ -50,3 +50,7 @@ on conflict (user_id) do update set role = excluded.role;
 ```
 
 Sign in and open `/admin`. Validate and preview your JSON, save it as a draft, then select **Publish topic and drafts** when ready.
+
+Content is free by default. In Content admin, set a topic, module or activity to **Restricted** and grant a learner access using their Supabase user ID. Grants can expire or be revoked. A parent must also be accessible, and a grant never bypasses the learning order. Preview items are available to signed-in learners with access to the parent hierarchy.
+
+Before deploying, keep public signup disabled, rotate any shared test password and verify the sample chapter with a learner account. Check sign-in, lesson completion, quiz feedback, lab persistence, solution reveal, the final quiz and My progress on desktop and mobile. The app includes a web manifest and uses online sessions for learner content.
