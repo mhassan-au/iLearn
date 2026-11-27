@@ -40,7 +40,8 @@ const activity = z.discriminatedUnion("type", [
     setup: text, safety: text, troubleshooting: text.optional(),
     resources: z.array(link).max(30).optional(),
     steps: z.array(z.strictObject({
-      id, title, instructions: text, expectedResult: text, command: text.optional(), screenshot: url.optional(),
+      id, title, instructions: text, expectedResult: text, hint: text.optional(), workedAnswer: text.optional(),
+      command: text.optional(), screenshot: url.optional(),
     })).min(1).max(100),
   }) }),
   z.strictObject({ ...common, type: z.literal("independentLab"), solution: text.optional(), content: z.strictObject({

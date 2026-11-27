@@ -8,7 +8,10 @@ import { saveLab } from "./lab-actions";
 import { ActionButton } from "../components/action-button";
 import { Toast } from "../components/toast";
 
-type Step = { id: string; title: string; instructions: string; expectedResult?: string; command?: string; screenshot?: string };
+type Step = {
+  id: string; title: string; instructions: string; expectedResult?: string;
+  hint?: string; workedAnswer?: string; command?: string; screenshot?: string;
+};
 type LabContent = {
   objective?: string; objectives?: string[]; prerequisites?: string[]; tools?: string[];
   setup?: string; safety?: string; troubleshooting?: string; steps?: Step[];
@@ -20,6 +23,14 @@ function LabText({ title, text }: { title: string; text?: string }) {
   return text ? <section><h3 className="font-semibold">{title}</h3>
     <div className="lesson-body"><Markdown skipHtml remarkPlugins={[remarkGfm]}>{text}</Markdown></div>
   </section> : null;
+}
+
+function StepSupport({ label, text }: { label: string; text?: string }) {
+  if (!text) return null;
+  return <details className="rounded-lg border border-[var(--border)] bg-[var(--background)] p-3">
+    <summary className="cursor-pointer font-semibold">{label}</summary>
+    <div className="lesson-body mt-2"><Markdown skipHtml remarkPlugins={[remarkGfm]}>{text}</Markdown></div>
+  </details>;
 }
 
 function LabList({ title, items }: { title: string; items?: string[] }) {
@@ -81,6 +92,8 @@ export async function Lab({ client, chapter, activity, guided, completed, reveal
           {step.screenshot && defaultUrlTransform(step.screenshot) &&
             <img src={defaultUrlTransform(step.screenshot)} alt={`Screenshot for ${step.title}`} className="max-w-full rounded-lg" />}
           <LabText title="Expected result" text={step.expectedResult} />
+          <StepSupport label="Show hint" text={step.hint} />
+          <StepSupport label="Show worked answer" text={step.workedAnswer} />
           {checkbox(step.id, "Step complete")}
         </li>)}
       </ol> : <fieldset className="space-y-2">

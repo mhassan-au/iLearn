@@ -47,7 +47,9 @@
                 "id": "record",
                 "title": "Record what the evidence shows",
                 "instructions": "A fictional booking export has a blank date field. Record the observation before suggesting what to check next.",
-                "expectedResult": "A sentence identifying the missing value and one follow-up question."
+                "expectedResult": "A sentence identifying the missing value and one follow-up question.",
+                "hint": "Describe what you can see before suggesting why the field is blank.",
+                "workedAnswer": "The exported record has no booking date. Does the source booking record contain a date?"
               }]
             }
           },
