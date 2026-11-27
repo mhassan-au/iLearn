@@ -11,6 +11,7 @@ import { Lab } from "../lab";
 import { ActionButton } from "../../components/action-button";
 import { Toast } from "../../components/toast";
 import { ListenToLesson } from "../listen-to-lesson";
+import { QuizRecap } from "../quiz-recap";
 
 type Activity = {
   id: string; title: string; type: string; description: string;
@@ -19,7 +20,7 @@ type Activity = {
 
 export default async function Learn({ params, searchParams }: {
   params: Promise<{ chapter: string }>;
-  searchParams: Promise<{ activity?: string; error?: string; attempt?: string; solution?: string; saved?: string; notice?: string }>;
+  searchParams: Promise<{ activity?: string; error?: string; attempt?: string; solution?: string; saved?: string; notice?: string; recap?: string }>;
 }) {
   const [{ chapter }, query] = await Promise.all([params, searchParams]);
   const client = await learningClient();
@@ -33,10 +34,17 @@ export default async function Learn({ params, searchParams }: {
   const activities: Activity[] = outline.data ?? [];
   const open = activities.filter((item) => item.unlocked);
   const itemsDone = activities.filter((item) => item.completed).length;
-  const current = query.activity
+  const showRecap = query.recap === "1";
+  const finalQuiz = activities.find((item) => item.type === "finalQuiz");
+  const recapUnlocked = !!finalQuiz?.completed && finalQuiz.unlocked;
+  const recapTitle = "What you learned and how to use it";
+  const recapUrl = `/learn/${encodeURIComponent(chapter)}?recap=1`;
+  const attempt = showRecap && finalQuiz && recapUnlocked ? await client.from("quiz_attempts")
+    .select("id").eq("activity_id", finalQuiz.id).order("submitted_at", { ascending: false }).limit(1).maybeSingle() : null;
+  const current = showRecap ? undefined : query.activity
     ? activities.find((item) => item.id === query.activity)
     : open.find((item) => !item.completed) ?? open.at(-1) ?? activities[0];
-  if (query.activity && !current) notFound();
+  if (!showRecap && query.activity && !current) notFound();
 
   let lesson: { markdown?: string; objectives?: string[]; takeaways?: string[] } | null = null;
   if (current?.unlocked && current.type === "lesson") {
@@ -75,9 +83,20 @@ export default async function Learn({ params, searchParams }: {
               <small className="block">{item.completed ? "Complete" : item.unlocked ? `${item.estimated_minutes} min` : "Locked"}</small>
             </li>)}
           </ol>
+          <div className="mt-4 space-y-1 border-t border-[var(--border)] pt-3">
+            {recapUnlocked
+              ? <Link href={recapUrl} aria-current={showRecap ? "page" : undefined}>{recapTitle}</Link>
+              : <><span>{recapTitle}</span><small className="block">Unlocks after the final quiz</small></>}
+          </div>
         </details>
         <article className="panel min-w-0 space-y-5">
-          {!current ? <p>No activities are available yet.</p> : <>
+          {showRecap ? <>
+            <h2>{recapTitle}</h2>
+            {recapUnlocked && finalQuiz && attempt?.data
+              ? <QuizRecap client={client} chapter={chapter} activity={finalQuiz.id} attempt={attempt.data.id} />
+              : <p>{recapUnlocked ? "The recap is temporarily unavailable." : "Complete the final quiz to unlock this section."}</p>}
+            <Link className="button button-secondary" href="/dashboard">Back to My learning</Link>
+          </> : !current ? <p>No activities are available yet.</p> : <>
             <h2>{current.title}</h2>
             <p>{current.description}</p>
             {query.error === "completion" && <p role="alert">Completion could not be saved. Please try again.</p>}
