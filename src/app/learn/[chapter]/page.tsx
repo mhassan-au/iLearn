@@ -8,6 +8,8 @@ import { completeLesson } from "../actions";
 import { ActivityVisit } from "../activity-visit";
 import { Quiz } from "../quiz";
 import { Lab } from "../lab";
+import { ActionButton } from "../../components/action-button";
+import { Toast } from "../../components/toast";
 
 type Activity = {
   id: string; title: string; type: string; description: string;
@@ -16,7 +18,7 @@ type Activity = {
 
 export default async function Learn({ params, searchParams }: {
   params: Promise<{ chapter: string }>;
-  searchParams: Promise<{ activity?: string; error?: string; attempt?: string; solution?: string; saved?: string }>;
+  searchParams: Promise<{ activity?: string; error?: string; attempt?: string; solution?: string; saved?: string; notice?: string }>;
 }) {
   const [{ chapter }, query] = await Promise.all([params, searchParams]);
   const client = await learningClient();
@@ -51,6 +53,8 @@ export default async function Learn({ params, searchParams }: {
 
   return (
     <div className="space-y-6">
+      {query.notice === "lesson-complete" && <Toast message="Lesson complete. Your progress is saved." />}
+      {query.error === "completion" && <Toast tone="error" message="Your lesson completion couldn’t be saved." />}
       <Link href="/topics">All topics</Link>
       {current?.unlocked && <ActivityVisit chapter={chapter} activity={current.id} />}
       <header className="space-y-3">
@@ -79,7 +83,7 @@ export default async function Learn({ params, searchParams }: {
             {!current.unlocked ? <p>Complete the earlier modules and required activities to unlock this one.</p>
               : current.type === "shortQuiz" || current.type === "finalQuiz" ? (
                 <Quiz client={client} chapter={chapter} activity={current.id} formal={current.type === "finalQuiz"}
-                  passingScore={info.data.passing_score} attempt={query.attempt} errorCode={query.error} />
+                  passingScore={info.data.passing_score} attempt={query.attempt} errorCode={query.error} justSubmitted={query.notice === "quiz-submitted"} />
               ) : current.type === "guidedLab" || current.type === "independentLab" ? (
                 <Lab client={client} chapter={chapter} activity={current.id} guided={current.type === "guidedLab"}
                   completed={current.completed} reveal={query.solution === "show"} saved={query.saved} errorCode={query.error} />
@@ -93,7 +97,7 @@ export default async function Learn({ params, searchParams }: {
                 {!!lesson.takeaways?.length && <section><h3 className="font-semibold">Key takeaways</h3>
                   <ul className="list-disc pl-6">{lesson.takeaways.map((item) => <li key={item}>{item}</li>)}</ul></section>}
                 {current.completed ? <p>Lesson complete</p> :
-                  <form action={completeLesson.bind(null, chapter, current.id)}><button className="button" type="submit">Mark complete</button></form>}
+                  <form action={completeLesson.bind(null, chapter, current.id)}><ActionButton pendingLabel="Saving progress…">Mark complete</ActionButton></form>}
               </> : <p>The lesson is currently unavailable.</p>}
             <nav className="flex flex-wrap gap-5" aria-label="Activity navigation">
               {previous?.unlocked && <Link href={activityUrl(previous.id)}>Previous</Link>}

@@ -3,6 +3,8 @@ import { notFound } from "next/navigation";
 import { learningClient } from "../../lib/learning";
 import { ImportForm } from "./import-form";
 import { grantContentAccess, revokeContentAccess, setContentAccess, setContentStatus } from "./actions";
+import { ActionButton } from "../components/action-button";
+import { Toast } from "../components/toast";
 
 type Item = { kind: string; id: string; parent_id: string | null; title: string; status: string };
 type Grant = { id: string; user_id: string; resource_id: string; resource_kind: string; expires_at: string | null };
@@ -14,9 +16,9 @@ function ContentItem({ item, items }: { item: Item; items: Item[] }) {
     <div className="flex flex-wrap items-center justify-between gap-2">
       <div><strong>{item.title}</strong><p className="text-sm">{item.kind} · {item.status} · {item.id}</p></div>
       <form action={setContentStatus.bind(null, item.kind, item.id)} className="flex flex-wrap gap-2">
-        {item.status !== "published" && <button className="button" name="status" value="published">{item.kind === "topic" ? "Publish topic and drafts" : "Publish"}</button>}
-        {item.status === "published" && <button className="button" name="status" value="draft">Unpublish</button>}
-        {item.status !== "archived" && <button className="rounded-lg border border-[var(--border)] px-3" name="status" value="archived">Archive</button>}
+        {item.status !== "published" && <ActionButton name="status" value="published" pendingLabel="Publishing…">{item.kind === "topic" ? "Publish topic and drafts" : "Publish"}</ActionButton>}
+        {item.status === "published" && <ActionButton name="status" value="draft" pendingLabel="Unpublishing…">Unpublish</ActionButton>}
+        {item.status !== "archived" && <ActionButton className="button button-secondary" name="status" value="archived" pendingLabel="Archiving…">Archive</ActionButton>}
       </form>
     </div>
     {item.kind !== "chapter" && <form action={setContentAccess.bind(null, item.kind, item.id)} className="flex flex-wrap items-center gap-2">
@@ -52,7 +54,7 @@ export default async function Admin({ searchParams }: { searchParams: Promise<{ 
     <section className="space-y-3">
       <h2>Manage content</h2>
       {query.failed && <p role="alert">The update could not be saved. Check the selected item and learner ID.</p>}
-      {query.updated && <p role="status">Update saved.</p>}
+      {query.updated && <Toast message="Update saved." />}
       {inventory.error ? <p role="alert">Content could not be loaded.</p> :
         <ul className="space-y-3">{items.filter((item) => item.kind === "topic").map((item) => <ContentItem key={item.id} item={item} items={items} />)}</ul>}
     </section>
@@ -69,13 +71,13 @@ export default async function Admin({ searchParams }: { searchParams: Promise<{ 
           </select>
         </label>
         <label className="block">Days until expiry (optional)<input name="days" type="number" min={1} max={3650} /></label>
-        <button className="button">Grant access</button>
+        <ActionButton pendingLabel="Granting access…">Grant access</ActionButton>
       </form>
       {access.error && <p>Access records could not be loaded.</p>}
       {!!grants.length && <ul className="space-y-3">{grants.map((grant) => <li key={grant.id} className="flex flex-wrap items-center justify-between gap-3 border-t border-[var(--border)] pt-3">
         <p className="break-all">{grant.resource_kind} · {grant.resource_id} · {grant.user_id}
           {grant.expires_at ? ` · expires ${grant.expires_at.slice(0, 10)} UTC` : ""}</p>
-        <form action={revokeContentAccess.bind(null, grant.id)}><button className="button">Revoke</button></form>
+        <form action={revokeContentAccess.bind(null, grant.id)}><ActionButton className="button button-secondary" pendingLabel="Revoking…">Revoke</ActionButton></form>
       </li>)}</ul>}
     </section>
   </div>;

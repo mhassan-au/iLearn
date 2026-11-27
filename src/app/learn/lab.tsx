@@ -5,6 +5,8 @@ import remarkGfm from "remark-gfm";
 import type { learningClient } from "../../lib/learning";
 import { CopyCommand } from "./copy-command";
 import { saveLab } from "./lab-actions";
+import { ActionButton } from "../components/action-button";
+import { Toast } from "../components/toast";
 
 type Step = { id: string; title: string; instructions: string; expectedResult?: string; command?: string; screenshot?: string };
 type LabContent = {
@@ -66,7 +68,7 @@ export async function Lab({ client, chapter, activity, guided, completed, reveal
         return url ? <li key={index}><a href={url}>{resource.label}</a></li> : null;
       })}</ul>
     </section>}
-    {saved && <p role="status">{completed ? "Lab complete. Your notes are saved." : "Your checklist and notes are saved."}</p>}
+    {saved && <Toast key={saved} message={completed ? "Lab complete. Your notes are saved." : "Lab notes and checklist saved."} />}
     {errorCode?.startsWith("lab-") && <p role="alert">{errorCode === "lab-checklist"
       ? "Check every item before completing the lab. You can save your work and come back."
       : "Your lab could not be saved. Please try again."}</p>}
@@ -91,8 +93,8 @@ export async function Lab({ client, chapter, activity, guided, completed, reveal
           className="mt-2 block w-full rounded-lg border border-[var(--border)] p-3 font-normal" />
       </label>
       <div className="flex flex-wrap gap-3">
-        {!completed && <button type="submit" name="intent" value="complete" className="button">Mark lab complete</button>}
-        <button type="submit" name="intent" value="save" className="rounded-lg border border-[var(--border)] px-4 py-2">Save notes and checklist</button>
+        {!completed && <ActionButton name="intent" value="complete" pendingLabel="Completing lab…">Mark lab complete</ActionButton>}
+        <ActionButton name="intent" value="save" className="button button-secondary" pendingLabel="Saving notes…">Save notes and checklist</ActionButton>
         {completed && <Link className="button" href={`/learn/${encodeURIComponent(chapter)}`}>Continue learning</Link>}
       </div>
     </form>

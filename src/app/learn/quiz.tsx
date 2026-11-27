@@ -4,6 +4,7 @@ import Link from "next/link";
 import type { learningClient } from "../../lib/learning";
 import { submitQuiz } from "./quiz-actions";
 import { QuizForm } from "./quiz-form";
+import { Toast } from "../components/toast";
 
 type Option = { id: string; label: string };
 type Question = {
@@ -20,10 +21,10 @@ const accessDate = new Intl.DateTimeFormat("en-AU", {
 });
 const uuidPattern = /^[0-9a-f]{8}(?:-[0-9a-f]{4}){3}-[0-9a-f]{12}$/i;
 
-export async function Quiz({ client, chapter, activity, formal, passingScore, attempt, errorCode }: {
+export async function Quiz({ client, chapter, activity, formal, passingScore, attempt, errorCode, justSubmitted }: {
   client: Awaited<ReturnType<typeof learningClient>>;
   chapter: string; activity: string; formal: boolean; passingScore: number;
-  attempt?: string; errorCode?: string;
+  attempt?: string; errorCode?: string; justSubmitted: boolean;
 }) {
   const path = `/learn/${encodeURIComponent(chapter)}?activity=${encodeURIComponent(activity)}`;
   const history = await client.from("quiz_attempts").select("id,score,passed,submitted_at")
@@ -36,6 +37,7 @@ export async function Quiz({ client, chapter, activity, formal, passingScore, at
     if (result?.data) {
       const { score, passed, review } = result.data;
       body = <>
+        {justSubmitted && <Toast key={attempt} message={formal && passed ? "Assessment passed. Your result is saved." : "Quiz submitted. Your result is saved."} />}
         <h3 className="text-lg font-semibold">Result: {score}%{formal ? (passed ? " · Passed" : " · Not passed") : ""}</h3>
         {formal && !passed && <p>The passing score is {passingScore}%. You can try again.</p>}
         <ol className="space-y-3">
@@ -67,7 +69,7 @@ export async function Quiz({ client, chapter, activity, formal, passingScore, at
     } else {
       body = <>
         <p>{questions.length} {questions.length === 1 ? "question" : "questions"}{formal ? ` · ${passingScore}% to pass` : " · Feedback after submission"}</p>
-        {errorCode?.startsWith("quiz-") && <p role="alert">{errorCode === "quiz-answers"
+        {errorCode?.startsWith("quiz-") && <p className="form-error" role="alert">{errorCode === "quiz-answers"
           ? "Select a valid answer for every question and try again."
           : "Your quiz could not be submitted. Please try again."}</p>}
         <QuizForm action={submitQuiz.bind(null, chapter, activity, randomUUID())} questionCount={questions.length}>

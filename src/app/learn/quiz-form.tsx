@@ -2,14 +2,7 @@
 
 // Count questions answered, including questions with multiple selected options.
 import { useState, type ReactNode } from "react";
-import { useFormStatus } from "react-dom";
-
-function SubmitQuizButton() {
-  const { pending } = useFormStatus();
-  return <button type="submit" disabled={pending} className="button disabled:opacity-60">
-    {pending ? "Submitting…" : "Submit quiz"}
-  </button>;
-}
+import { ActionButton } from "../components/action-button";
 
 export function QuizForm({ action, questionCount, children }: {
   action: (data: FormData) => Promise<void>; questionCount: number; children: ReactNode;
@@ -22,6 +15,6 @@ export function QuizForm({ action, questionCount, children }: {
     <p className="text-sm" aria-live="polite">{answered} of {questionCount} answered</p>
     <progress className="learning-progress" value={answered} max={questionCount} aria-label="Quiz progress" />
     {children}
-    <SubmitQuizButton />
+    <ActionButton pendingLabel="Submitting…">Submit quiz</ActionButton>
   </form>;
 }

@@ -29,11 +29,14 @@ export async function signIn(form: FormData) {
     }
     redirect("/sign-in?error=credentials");
   }
-  redirect("/dashboard");
+  redirect("/dashboard?notice=signed-in");
 }
 
 export async function signOut() {
   const client = await requestClient();
-  if (client) await client.auth.signOut({ scope: "local" });
-  redirect("/sign-in");
+  if (client) {
+    const { error } = await client.auth.signOut({ scope: "local" });
+    if (error) redirect("/account?notice=sign-out-failed");
+  }
+  redirect("/sign-in?notice=signed-out");
 }

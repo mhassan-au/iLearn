@@ -8,7 +8,7 @@ export default function manifest(): MetadataRoute.Manifest {
     description: "Structured, self-paced learning.",
     start_url: "/dashboard",
     display: "standalone",
-    background_color: "#f2f5f3",
-    theme_color: "#075b45",
+    background_color: "#f4f6fa",
+    theme_color: "#2454bb",
   };
 }

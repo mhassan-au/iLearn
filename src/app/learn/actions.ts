@@ -24,5 +24,5 @@ export async function completeLesson(chapter: string, activity: string) {
   revalidatePath("/dashboard");
   revalidatePath("/progress");
   revalidatePath("/topics/[topic]", "page");
-  redirect(path);
+  redirect(`${path}?notice=lesson-complete`);
 }

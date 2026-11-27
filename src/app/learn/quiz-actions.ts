@@ -25,5 +25,5 @@ export async function submitQuiz(chapter: string, activity: string, attempt: str
   revalidatePath("/dashboard");
   revalidatePath("/progress");
   revalidatePath("/topics/[topic]", "page");
-  redirect(`${path}&attempt=${encodeURIComponent(data)}`);
+  redirect(`${path}&attempt=${encodeURIComponent(data)}&notice=quiz-submitted`);
 }

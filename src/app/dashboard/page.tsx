@@ -2,17 +2,18 @@
 import Link from "next/link";
 import { learningClient } from "../../lib/learning";
 import { learningPercent, NextActivity, type LearningSummary } from "../components/next-activity";
-import { signOut } from "../sign-in/actions";
+import { Toast } from "../components/toast";
 
 export const dynamic = "force-dynamic";
 
-export default async function Dashboard() {
+export default async function Dashboard({ searchParams }: { searchParams: Promise<{ notice?: string }> }) {
   const client = await learningClient();
   const [{ data, error }, profile] = await Promise.all([
     client.rpc("learning_resume"),
     client.from("profiles").select("role").maybeSingle(),
   ]);
   const topics: LearningSummary[] = Array.isArray(data) ? data : [];
+  const { notice } = await searchParams;
   const unfinished = topics.filter((topic) => topic.activity_count > topic.completed_count);
   const current = unfinished.reduce<LearningSummary | undefined>((latest, topic) => {
     if (!latest || (topic.last_accessed ?? "") > (latest.last_accessed ?? "")) return topic;
@@ -21,15 +22,15 @@ export default async function Dashboard() {
 
   return (
     <div className="space-y-8">
+      {notice === "signed-in" && <Toast message="You’re signed in." />}
       <div className="flex flex-wrap items-center justify-between gap-4">
         <h1>My learning</h1>
         <div className="flex flex-wrap items-center gap-4">
           {profile.data?.role === "administrator" && <Link href="/admin">Content admin</Link>}
-          <form action={signOut}><button className="button" type="submit">Sign out</button></form>
         </div>
       </div>
       {error ? <p role="alert">Learning progress could not be loaded. Please try again.</p> :
-        current ? <section className="panel space-y-4" aria-labelledby="current-topic">
+        current ? <section className="panel learning-card space-y-4" aria-labelledby="current-topic">
           <h2 id="current-topic">{current.topic_title}</h2>
           <p><strong>{learningPercent(current)}% complete</strong> · {current.completed_count} of {current.activity_count} activities</p>
           <NextActivity summary={current} />
