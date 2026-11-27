@@ -16,6 +16,7 @@ export async function saveLab(chapter: string, activity: string, form: FormData)
   });
   if (error || !data) redirect(`${path}&error=${error ? "lab-save" : "lab-checklist"}`);
   revalidatePath("/dashboard");
+  revalidatePath("/progress");
   revalidatePath("/topics/[topic]", "page");
   redirect(`${path}&saved=${done ? "complete" : "draft"}`);
 }

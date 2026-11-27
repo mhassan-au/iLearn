@@ -24,6 +24,10 @@ Implemented short quizzes and formal assessments with single-answer, multiple-an
 
 Guided and independent labs now show required tools, instructions or tasks, checklists and private learner notes. Completing each checklist unlocks the next activity. The independent lab's reference solution is available only after completion and an explicit reveal.
 
+## Milestone 5
+
+My progress lists topic completion, completed labs, recent quiz results and completed lessons. Each history entry links back to the relevant activity or attempt. Topic pages provide the module and chapter breakdown.
+
 ## Next milestone
 
-Progress aggregation, administration and entitlement management follow in their respective milestones.
+Content administration, entitlement management and deployment readiness follow in their respective milestones.

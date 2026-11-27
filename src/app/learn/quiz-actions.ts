@@ -23,6 +23,7 @@ export async function submitQuiz(chapter: string, activity: string, attempt: str
     redirect(`${path}&error=${error ? "quiz-unavailable" : "quiz-answers"}`);
   }
   revalidatePath("/dashboard");
+  revalidatePath("/progress");
   revalidatePath("/topics/[topic]", "page");
   redirect(`${path}&attempt=${encodeURIComponent(data)}`);
 }

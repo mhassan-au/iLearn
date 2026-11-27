@@ -19,6 +19,7 @@ export default function Layout({ children }: Readonly<{ children: React.ReactNod
             <div className="flex flex-wrap gap-5">
               <Link href="/topics">Topics</Link>
               <Link href="/dashboard">My learning</Link>
+              <Link href="/progress">My progress</Link>
             </div>
           </nav>
         </header>

@@ -22,6 +22,7 @@ export async function completeLesson(chapter: string, activity: string) {
     redirect(`${path}?activity=${encodeURIComponent(activity)}&error=completion`);
   }
   revalidatePath("/dashboard");
+  revalidatePath("/progress");
   revalidatePath("/topics/[topic]", "page");
   redirect(path);
 }
