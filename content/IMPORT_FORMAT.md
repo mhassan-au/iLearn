@@ -15,3 +15,10 @@ Start with [the sample JSON](examples/topic-v1.json). Use the content admin to v
 - Preserve existing IDs when editing. Keep each ID under the same parent and retain its activity type. Reorder with distinct sibling order numbers. Omitted items remain in the database. Archive obsolete items explicitly.
 - Importing replaces the questions and optional solution for the included activities while preserving learner records and previously stored quiz reviews. Imported records become drafts. Publishing is a separate action.
 - Keep source JSON containing solutions and grading keys private. Use only fictional or cleared content.
+
+## Source and scenario rules
+
+- Verify real-world claims before publishing. Link an authoritative source beside each factual claim or group of closely related claims it supports. For an incident, prefer the official investigation, regulator, or affected organisation's disclosure. Verify dates, figures, definitions, and standards against their source.
+- Distinguish confirmed findings, allegations, estimates and possible consequences. State uncertainty where it matters. If a claim cannot be verified, omit it or say what could not be verified. Never invent an incident, statistic, quote, or reference.
+- Begin any invented section with an explicit label such as **Metaphor**, **Fictional scenario**, or **Simulated evidence**, before the example starts. Apply this to lessons, quizzes, labs and worked reports. A fictional example may illustrate an idea, but cannot establish a real-world fact.
+- Separate general recommendations from incident findings. Explain why a control may reduce risk and how to verify it. Avoid claiming it would have prevented a specific incident unless the evidence supports that claim.
