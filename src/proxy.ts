@@ -9,6 +9,7 @@ export async function proxy(request: NextRequest) {
   if (!url || !key) return response;
 
   const client = createServerClient(url, key, {
+    cookieOptions: { httpOnly: true, secure: process.env.NODE_ENV === "production" },
     cookies: {
       getAll: () => request.cookies.getAll(),
       setAll: (values) => {
@@ -23,4 +24,4 @@ export async function proxy(request: NextRequest) {
   return response;
 }
 
-export const config = { matcher: ["/", "/sign-in", "/dashboard"] };
+export const config = { matcher: ["/", "/sign-in", "/dashboard", "/auth/confirm"] };

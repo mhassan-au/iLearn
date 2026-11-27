@@ -13,6 +13,8 @@ export async function requestClient() {
   if (!config) return null;
   const store = await cookies();
   return createServerClient(config.url, config.key, {
+    // Supabase SSR uses persistent cookies and rotates the refresh token.
+    cookieOptions: { httpOnly: true, secure: process.env.NODE_ENV === "production" },
     cookies: {
       getAll: () => store.getAll(),
       setAll: (values) => {
