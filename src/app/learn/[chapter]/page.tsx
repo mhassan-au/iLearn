@@ -5,6 +5,7 @@ import Markdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import { learningClient } from "../../../lib/learning";
 import { completeLesson } from "../actions";
+import { ActivityVisit } from "../activity-visit";
 
 type Activity = {
   id: string; title: string; type: string; description: string;
@@ -49,6 +50,7 @@ export default async function Learn({ params, searchParams }: {
   return (
     <div className="space-y-6">
       <Link href="/topics">All topics</Link>
+      {current?.unlocked && <ActivityVisit chapter={chapter} activity={current.id} />}
       <header className="space-y-3">
         <h1>{info.data.title}</h1>
         <p>{info.data.description}</p>

@@ -4,6 +4,11 @@
 import { redirect } from "next/navigation";
 import { learningClient } from "../../lib/learning";
 
+export async function recordActivityVisit(chapter: string, activity: string) {
+  const client = await learningClient();
+  await client.rpc("record_activity_visit", { target_chapter: chapter, target_activity: activity });
+}
+
 export async function completeLesson(chapter: string, activity: string) {
   const client = await learningClient();
   const { data, error } = await client.rpc("complete_lesson", {
