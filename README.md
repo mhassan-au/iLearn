@@ -20,7 +20,7 @@ SelfLearn is a linear, self-paced learning platform. Milestone 1 provides a prot
 
 ## Provision a sign-in account
 
-In Supabase **Authentication → Users**, create a user with a strong password and enable **Auto Confirm User**. For username `learner`, use `learner@ilearn.invalid` as the Supabase email address. In the app, enter `learner` and that password. Usernames are case-insensitive, use 3–32 letters, digits, underscores or hyphens, and start with a letter or digit.
+In Supabase **Authentication → Users**, create a user with a strong password and enable **Auto Confirm User**. For username `learner`, use `learner@ilearn.invalid` as the Supabase email address. In the app, enter either `learner` or the full internal address, and that password. Usernames are case-insensitive, use 3–32 letters, digits, underscores or hyphens, and start with a letter or digit.
 
 Keep the Email provider enabled in Supabase and disable public signup. The internal address is only an account identifier. Password changes for these accounts are handled by the project owner, since the internal address cannot receive reset mail.
 
