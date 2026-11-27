@@ -3,6 +3,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { learningClient } from "../../../lib/learning";
 import { ChapterList } from "../components/chapter-list";
+import { learningPercent, NextActivity, type LearningSummary } from "../../components/next-activity";
 
 const accessDate = new Intl.DateTimeFormat("en-AU", { dateStyle: "medium", timeZone: "Australia/Sydney" });
 type ModuleProgress = {
@@ -16,29 +17,23 @@ export default async function Topic({ params }: { params: Promise<{ topic: strin
   const result = await client.from("topics").select("id,title,description,objectives").eq("slug", topic).maybeSingle();
   if (result.error) throw new Error("Could not load topic");
   if (!result.data) notFound();
-  const [moduleList, progress] = await Promise.all([
+  const [moduleList, progress, resume] = await Promise.all([
     client.from("modules").select("id,title,description,estimated_minutes").eq("topic_id", result.data.id).order("sort_order"),
     client.rpc("topic_module_progress", { target_topic: result.data.id })
       .select("module_id,percent,last_accessed,completed_count,activity_count,completed_at,unlocked"),
+    client.rpc("learning_resume", { target_topic: result.data.id }),
   ]);
   if (moduleList.error) throw new Error("Could not load modules");
   const modules = moduleList.data;
   const summaries: ModuleProgress[] = Array.isArray(progress.data) ? progress.data : [];
-  const hasTotals = !progress.error && Array.isArray(progress.data) && summaries.length === modules.length &&
-    summaries.every((row) => Number.isSafeInteger(row.completed_count) &&
-      Number.isSafeInteger(row.activity_count) && row.completed_count >= 0 &&
-      row.activity_count >= row.completed_count);
+  const learning: LearningSummary | undefined = Array.isArray(resume.data) ? resume.data[0] : undefined;
   const progressByModule = new Map(summaries.map((row) => [row.module_id, row]));
-  const counts = (hasTotals ? summaries : []).reduce((sum, row) => ({
-    completed: sum.completed + row.completed_count, total: sum.total + row.activity_count,
-  }), { completed: 0, total: 0 });
-  const topicPercent = counts.total ? Math.floor(100 * counts.completed / counts.total) : 0;
   const latest = summaries.filter((row) => row.completed_at)
     .sort((a, b) => Date.parse(b.completed_at!) - Date.parse(a.completed_at!))[0];
   const lastModule = modules.find((module) => module.id === latest?.module_id);
   const currentModule = modules.find((module) => {
     const state = progressByModule.get(module.id);
-    return state?.unlocked && !state.completed_at;
+    return state?.unlocked && state.completed_count < state.activity_count;
   });
 
   return (
@@ -49,9 +44,10 @@ export default async function Topic({ params }: { params: Promise<{ topic: strin
       {!!result.data.objectives.length && <ul className="list-disc pl-6">{result.data.objectives.map((item: string) => <li key={item}>{item}</li>)}</ul>}
       <section className="panel space-y-3" aria-label="Topic progress">
         <h2>Topic progress</h2>
-        {!hasTotals ? <p>Progress is temporarily unavailable.</p> : <>
-          <p><strong>{topicPercent}% complete</strong> · {counts.completed} of {counts.total} activities</p>
+        {!learning ? <p>Progress is temporarily unavailable.</p> : <>
+          <p><strong>{learningPercent(learning)}% complete</strong> · {learning.completed_count} of {learning.activity_count} activities</p>
           <p>Last completed module: {lastModule?.title ?? "None yet"}</p>
+          <NextActivity summary={learning} />
         </>}
       </section>
       <h2>Modules</h2>
@@ -67,7 +63,7 @@ export default async function Topic({ params }: { params: Promise<{ topic: strin
                     {summary ? (
                       <span className="mt-2 block space-y-2 text-sm font-normal">
                         <span className="flex flex-wrap gap-x-4 gap-y-1">
-                          <span>{summary.percent}% complete</span>
+                          <span>{summary.completed_at ? "Complete" : `${summary.percent}% complete`}</span>
                           <span>Last accessed: {summary.last_accessed
                             ? <time dateTime={summary.last_accessed}>{accessDate.format(new Date(summary.last_accessed))}</time>
                             : "Not yet accessed"}</span>

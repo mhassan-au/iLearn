@@ -14,6 +14,8 @@ Implemented the catalogue, topic and module overviews, chapter outline, safe Mar
 
 Applied the navigation migration and sample seed to the hosted iLearn project. The production build passed. A transaction on the linked database verified the seven-activity outline, locked lesson access, lesson completion and quiz unlocking, then rolled back. The full pgTAP suite still requires Docker.
 
+My learning now highlights the most recently accessed unfinished topic and shows its next unlocked activity. The topic overview uses the same resume data, with numerical topic progress and shaded module bars. The resume migration is applied and was verified before and after completing the first sample lesson.
+
 ## Next milestone
 
 The quiz engine adds short quizzes, protected final assessments, server-side grading, retries and attempt history. Lab interactions, progress aggregation, administration and entitlement management follow in their respective milestones.

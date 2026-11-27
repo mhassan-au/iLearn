@@ -1,18 +1,20 @@
-// Protected dashboard shell with the published sample topic.
-import { redirect } from "next/navigation";
+// Learner dashboard with one primary next step and a compact topic list.
 import Link from "next/link";
-import { requestClient } from "../../lib/supabase";
+import { learningClient } from "../../lib/learning";
+import { learningPercent, NextActivity, type LearningSummary } from "../components/next-activity";
 import { signOut } from "../sign-in/actions";
 
 export const dynamic = "force-dynamic";
 
 export default async function Dashboard() {
-  const client = await requestClient();
-  if (!client) redirect("/sign-in");
-  const { data: session } = await client.auth.getClaims();
-  if (!session?.claims.sub) redirect("/sign-in");
-  const { data: topics, error } = await client
-    .from("topics").select("id,slug,title,description,estimated_minutes").order("sort_order");
+  const client = await learningClient();
+  const { data, error } = await client.rpc("learning_resume");
+  const topics: LearningSummary[] = Array.isArray(data) ? data : [];
+  const unfinished = topics.filter((topic) => topic.activity_count > topic.completed_count);
+  const current = unfinished.reduce<LearningSummary | undefined>((latest, topic) => {
+    if (!latest || (topic.last_accessed ?? "") > (latest.last_accessed ?? "")) return topic;
+    return latest;
+  }, undefined);
 
   return (
     <div className="space-y-8">
@@ -20,18 +22,27 @@ export default async function Dashboard() {
         <h1>My learning</h1>
         <form action={signOut}><button className="button" type="submit">Sign out</button></form>
       </div>
-      <section className="space-y-4" aria-labelledby="available-topics">
-        <h2 id="available-topics">Available topics</h2>
-        {error ? <p role="alert">Topics could not be loaded. Please try again.</p> :
-          !topics?.length ? <p>No published topics are available yet.</p> :
-          topics.map((topic) => (
-            <article className="panel space-y-3" key={topic.id}>
-              <h3 className="text-xl font-semibold"><Link href={`/topics/${topic.slug}`}>{topic.title}</Link></h3>
-              <p>{topic.description}</p>
-              <p>{topic.estimated_minutes} minutes</p>
-            </article>
-          ))}
-      </section>
+      {error ? <p role="alert">Learning progress could not be loaded. Please try again.</p> :
+        current ? <section className="panel space-y-4" aria-labelledby="current-topic">
+          <h2 id="current-topic">{current.topic_title}</h2>
+          <p><strong>{learningPercent(current)}% complete</strong> · {current.completed_count} of {current.activity_count} activities</p>
+          <NextActivity summary={current} />
+          <Link href={`/topics/${current.topic_slug}`}>View modules</Link>
+        </section> : <p>{topics.some((topic) => topic.activity_count > 0)
+          ? "You’re up to date. All available activities are complete."
+          : "No learning activities are published yet."}</p>}
+      {!error && topics.some((topic) => topic.topic_id !== current?.topic_id) &&
+        <section className="space-y-3" aria-labelledby="other-topics">
+          <h2 id="other-topics">{current ? "Other topics" : "Topics"}</h2>
+          <ul className="space-y-2">
+            {topics.filter((topic) => topic.topic_id !== current?.topic_id).map((topic) => (
+              <li className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-[var(--border)] p-4" key={topic.topic_id}>
+                <Link href={`/topics/${topic.topic_slug}`}>{topic.topic_title}</Link>
+                <span>{topic.activity_count ? `${learningPercent(topic)}% complete` : "No activities yet"}</span>
+              </li>
+            ))}
+          </ul>
+        </section>}
     </div>
   );
 }
