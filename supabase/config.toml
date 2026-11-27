@@ -4,9 +4,6 @@ project_id = "selflearn"
 site_url = "http://localhost:3000"
 enable_signup = false
 
-[auth.email.template.magic_link]
-subject = "Sign in to SelfLearn"
-content_path = "./supabase/templates/magic-link.html"
 
 [db.seed]
 enabled = true

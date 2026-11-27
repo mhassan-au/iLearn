@@ -2,7 +2,7 @@
 
 ## Milestone 1
 
-Implemented the responsive shell, provisioned-account Supabase magic-link sign-in, persistent sessions, sign-out, protected dashboard, migration, access-policy tests and fictional sample chapter. The fixture covers two lessons, two short quizzes, a guided lab, an independent lab and a final quiz.
+Implemented the responsive shell, provisioned-account username and password sign-in via Supabase Auth, persistent sessions, sign-out, protected dashboard, migration, access-policy tests and fictional sample chapter. The fixture covers two lessons, two short quizzes, a guided lab, an independent lab and a final quiz.
 
 See [README](README.md) for setup, verification and deployment steps. Hosting and end-to-end authentication require a configured Supabase instance.
 

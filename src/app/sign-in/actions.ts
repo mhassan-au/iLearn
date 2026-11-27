@@ -1,28 +1,24 @@
 "use server";
 
-// Request a one-time link without revealing whether the account exists.
+// Authenticate provisioned usernames through Supabase Auth's email provider.
 import { redirect } from "next/navigation";
 import { requestClient } from "../../lib/supabase";
 
 export async function signIn(form: FormData) {
   const client = await requestClient();
   if (!client) redirect("/sign-in");
-  const email = String(form.get("email") ?? "").trim();
-  if (email.length > 254 || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+  const username = form.get("username");
+  const password = form.get("password");
+  const normalized = typeof username === "string" ? username.trim().toLowerCase() : "";
+  if (!/^[a-z0-9][a-z0-9_-]{2,31}$/.test(normalized) ||
+      typeof password !== "string" || !password || password.length > 1024) {
     redirect("/sign-in?error=1");
   }
-  await client.auth.signInWithOtp({ email, options: { shouldCreateUser: false } });
-  redirect("/sign-in?sent=1");
-}
-
-export async function confirmSignIn(form: FormData) {
-  const client = await requestClient();
-  const hash = form.get("token_hash");
-  if (!client || typeof hash !== "string" || !/^[a-zA-Z0-9_-]{1,256}$/.test(hash)) {
-    redirect("/sign-in?expired=1");
-  }
-  const { error } = await client.auth.verifyOtp({ token_hash: hash, type: "email" });
-  if (error) redirect("/sign-in?expired=1");
+  const { error } = await client.auth.signInWithPassword({
+    email: `${normalized}@ilearn.invalid`,
+    password,
+  });
+  if (error) redirect("/sign-in?error=1");
   redirect("/dashboard");
 }
 
