@@ -12,6 +12,8 @@ SelfLearn is a linear, self-paced learning platform. Milestone 1 provides a prot
 
 ## Verify
 
+In a supported browser, open a lesson and select **Listen to lesson**. Pause, resume and stop playback. Starting playback does not change completion. Leaving the lesson stops the audio.
+
 - Run `npm run typecheck`, `npm run build` and `supabase test db`.
 - Open My learning in a private window. It should redirect to sign-in.
 - Enter a wrong password and check that a generic error appears. Then use the provisioned username and password and confirm that My learning opens. The sample topic appears if the seed was applied.

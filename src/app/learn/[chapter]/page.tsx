@@ -10,6 +10,7 @@ import { Quiz } from "../quiz";
 import { Lab } from "../lab";
 import { ActionButton } from "../../components/action-button";
 import { Toast } from "../../components/toast";
+import { ListenToLesson } from "../listen-to-lesson";
 
 type Activity = {
   id: string; title: string; type: string; description: string;
@@ -89,13 +90,16 @@ export default async function Learn({ params, searchParams }: {
                   completed={current.completed} reveal={query.solution === "show"} saved={query.saved} errorCode={query.error} />
               )
               : lesson ? <>
-                {!!lesson.objectives?.length && <section><h3 className="font-semibold">Learning objectives</h3>
-                  <ul className="list-disc pl-6">{lesson.objectives.map((item) => <li key={item}>{item}</li>)}</ul></section>}
-                <div className="lesson-body">
-                  <Markdown skipHtml remarkPlugins={[remarkGfm]}>{lesson.markdown ?? ""}</Markdown>
+                <ListenToLesson key={current.id} contentId="lesson-reading-content" title={current.title} />
+                <div id="lesson-reading-content" className="space-y-5">
+                  {!!lesson.objectives?.length && <section><h3 className="font-semibold">Learning objectives</h3>
+                    <ul className="list-disc pl-6">{lesson.objectives.map((item) => <li key={item}>{item}</li>)}</ul></section>}
+                  <div className="lesson-body">
+                    <Markdown skipHtml remarkPlugins={[remarkGfm]}>{lesson.markdown ?? ""}</Markdown>
+                  </div>
+                  {!!lesson.takeaways?.length && <section><h3 className="font-semibold">Key takeaways</h3>
+                    <ul className="list-disc pl-6">{lesson.takeaways.map((item) => <li key={item}>{item}</li>)}</ul></section>}
                 </div>
-                {!!lesson.takeaways?.length && <section><h3 className="font-semibold">Key takeaways</h3>
-                  <ul className="list-disc pl-6">{lesson.takeaways.map((item) => <li key={item}>{item}</li>)}</ul></section>}
                 {current.completed ? <p>Lesson complete</p> :
                   <form action={completeLesson.bind(null, chapter, current.id)}><ActionButton pendingLabel="Saving progress…">Mark complete</ActionButton></form>}
               </> : <p>The lesson is currently unavailable.</p>}
