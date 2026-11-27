@@ -39,6 +39,15 @@ Set `NEXT_PUBLIC_SUPABASE_URL` to the base project URL shown in Supabase Connect
 
 Supabase SSR keeps the session in persistent cookies and refreshes tokens as needed. Keep Supabase's time-box and inactivity limits unset, or set them to cover your desired number of weeks.
 
+## Protect sign-in from bots
+
+1. Create a Cloudflare Turnstile widget and allow your Vercel deployment hostname. If you intend to sign in locally against the same hosted Supabase project, also allow your chosen local hostname or use a separate Supabase project and widget for development.
+2. Put the widget's public **site key** in `NEXT_PUBLIC_TURNSTILE_SITE_KEY` in Vercel and, if applicable, `.env.local`. Redeploy or restart, and check that the security challenge loads.
+3. In Supabase Auth settings, open **Bot and Abuse Protection**, enable CAPTCHA, choose **Turnstile**, and paste the widget's **secret key** there. Keep the secret out of Vercel public variables and Git. Apply this setting once your sign-in page is ready, because it affects all sign-ins on that Supabase project.
+4. Test that a valid challenge lets you sign in and that a sign-in without a challenge is rejected. Leave Supabase Auth's built-in rate limits enabled.
+
+This uses [Supabase's CAPTCHA verification](https://supabase.com/docs/guides/auth/auth-captcha) and applies to Auth requests that bypass the app. The browser widget is optional until its site key is configured. The app displays a cooldown message when Supabase rate-limits a request.
+
 The sign-in proxy follows the [Supabase SSR session guidance](https://supabase.com/docs/guides/auth/server-side/creating-a-client?framework=nextjs).
 
 ## Prepare your first topic

@@ -16,14 +16,22 @@ export async function signIn(form: FormData) {
       typeof password !== "string" || !password || password.length > 1024) {
     redirect("/sign-in?error=input");
   }
+  const captchaToken = form.get("captchaToken");
+  if (process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY?.trim() &&
+    (typeof captchaToken !== "string" || !captchaToken || captchaToken.length > 2048)) {
+    redirect("/sign-in?error=captcha");
+  }
   const { error } = await client.auth.signInWithPassword({
     email,
     password,
+    options: { captchaToken: typeof captchaToken === "string" && captchaToken.length <= 2048 ? captchaToken : undefined },
   });
   if (error) {
     if (process.env.NODE_ENV === "development") {
       console.warn("Supabase password sign-in failed", { status: error.status, code: error.code, type: error.name });
     }
+    if (error.code === "captcha_failed") redirect("/sign-in?error=captcha");
+    if (error.status === 429) redirect("/sign-in?error=rate-limit");
     if (error.name === "AuthRetryableFetchError" || (error.status ?? 0) >= 500) {
       redirect("/sign-in?error=unavailable");
     }
