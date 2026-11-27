@@ -20,6 +20,10 @@ My learning now highlights the most recently accessed unfinished topic and shows
 
 Implemented short quizzes and formal assessments with single-answer, multiple-answer, true/false and scenario questions. Grading runs in Postgres, and submitted attempts include the learner's score, answer review and explanations. Short quizzes advance on submission. Final quizzes advance after reaching the chapter pass mark. The quiz migration is applied to iLearn. Transaction-scoped checks verified access, grading and attempt privacy. The full pgTAP runner still requires Docker.
 
+## Milestone 4
+
+Guided and independent labs now show required tools, instructions or tasks, checklists and private learner notes. Completing each checklist unlocks the next activity. The independent lab's reference solution is available only after completion and an explicit reveal.
+
 ## Next milestone
 
-Guided and independent lab interactions come next. The sample final quiz remains behind the lab prerequisites in the learner interface. Progress aggregation, administration and entitlement management follow in their respective milestones.
+Progress aggregation, administration and entitlement management follow in their respective milestones.

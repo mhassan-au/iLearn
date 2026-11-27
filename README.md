@@ -18,7 +18,7 @@ SelfLearn is a linear, self-paced learning platform. Milestone 1 provides a prot
 - Reopen the same browser profile and check that My learning still opens. Sign out and confirm that the dashboard redirects to sign-in.
 - Try the flow at phone and desktop widths. Use the Tab key to check the skip link, input labels and visible focus. Switch the OS theme to check dark mode.
 - Sign in, open **Topics → Cybersecurity Assessment, Risk and Assurance → Cybersecurity and Assessment Foundations → Cybersecurity Principles and the CIA Triad**. The first lesson should open. Try `/learn/cia-triad?activity=cia` before completing its prerequisites, then return to the first lesson and mark it complete. Confirm the chapter shows one completed activity, the first quiz is unlocked, and the completed lesson can still be opened.
-- Submit the first quiz, check the feedback and recent attempts, then select **Continue learning**. The next lesson should open. The sample final quiz unlocks after its lab prerequisites, which are scheduled for Milestone 4.
+- Submit the first quiz, check the feedback and recent attempts, then select **Continue learning**. The next lesson should open. At each lab, save a partial checklist and notes, reload to verify persistence, then check all items and mark it complete. The independent lab's solution can be revealed after completion. Completing both labs unlocks the final quiz.
 
 ## Provision a sign-in account
 

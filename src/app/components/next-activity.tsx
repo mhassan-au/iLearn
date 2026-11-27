@@ -28,15 +28,14 @@ export function NextActivity({ summary }: { summary: LearningSummary }) {
       : summary.completed_count === summary.activity_count ? "Topic complete."
         : "No activity is available to continue right now."}</p>;
   }
-  const available = ["lesson", "shortQuiz", "finalQuiz"].includes(summary.activity_type ?? "");
   const chapterUrl = `/learn/${encodeURIComponent(summary.chapter_id)}?activity=${encodeURIComponent(summary.activity_id)}`;
   return (
     <div className="space-y-2">
       <p>Up next: <strong>{summary.activity_title}</strong></p>
       <p className="text-sm">{summary.module_title} · {summary.chapter_title}</p>
-      {available ? <Link className="button" href={chapterUrl}>
+      <Link className="button" href={chapterUrl}>
         {summary.last_accessed || summary.completed_count > 0 ? "Continue learning" : "Start learning"}
-      </Link> : <p className="text-sm">This lab is not available yet.</p>}
+      </Link>
     </div>
   );
 }

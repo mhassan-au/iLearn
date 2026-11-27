@@ -7,6 +7,7 @@ import { learningClient } from "../../../lib/learning";
 import { completeLesson } from "../actions";
 import { ActivityVisit } from "../activity-visit";
 import { Quiz } from "../quiz";
+import { Lab } from "../lab";
 
 type Activity = {
   id: string; title: string; type: string; description: string;
@@ -15,7 +16,7 @@ type Activity = {
 
 export default async function Learn({ params, searchParams }: {
   params: Promise<{ chapter: string }>;
-  searchParams: Promise<{ activity?: string; error?: string; attempt?: string }>;
+  searchParams: Promise<{ activity?: string; error?: string; attempt?: string; solution?: string; saved?: string }>;
 }) {
   const [{ chapter }, query] = await Promise.all([params, searchParams]);
   const client = await learningClient();
@@ -79,7 +80,10 @@ export default async function Learn({ params, searchParams }: {
               : current.type === "shortQuiz" || current.type === "finalQuiz" ? (
                 <Quiz client={client} chapter={chapter} activity={current.id} formal={current.type === "finalQuiz"}
                   passingScore={info.data.passing_score} attempt={query.attempt} errorCode={query.error} />
-              ) : current.type !== "lesson" ? <p>This lab will be available when the lab tools are ready.</p>
+              ) : current.type === "guidedLab" || current.type === "independentLab" ? (
+                <Lab client={client} chapter={chapter} activity={current.id} guided={current.type === "guidedLab"}
+                  completed={current.completed} reveal={query.solution === "show"} saved={query.saved} errorCode={query.error} />
+              )
               : lesson ? <>
                 {!!lesson.objectives?.length && <section><h3 className="font-semibold">Learning objectives</h3>
                   <ul className="list-disc pl-6">{lesson.objectives.map((item) => <li key={item}>{item}</li>)}</ul></section>}
