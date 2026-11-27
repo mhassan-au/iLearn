@@ -29,12 +29,23 @@ const question = z.strictObject({
 });
 
 const common = { id, title, description: text, estimatedMinutes: minutes, order, required: z.boolean().default(true) };
+const recapItems = z.array(z.string().trim().min(1).max(1000)).min(1).max(8);
+export const quizRecapSchema = z.strictObject({
+  summary: recapItems,
+  roles: z.array(z.strictObject({ title, actions: recapItems })).min(1).max(20),
+  assurance: recapItems,
+}).superRefine((recap, ctx) => {
+  if (new Set(recap.roles.map((role) => role.title.toLowerCase())).size !== recap.roles.length) {
+    ctx.addIssue({ code: "custom", path: ["roles"], message: "Use each role title once" });
+  }
+});
+const quizContent = z.strictObject({ recap: quizRecapSchema }).optional();
 const activity = z.discriminatedUnion("type", [
   z.strictObject({ ...common, type: z.literal("lesson"), content: z.strictObject({
     markdown: text, objectives: items.default([]), takeaways: items.default([]),
   }) }),
-  z.strictObject({ ...common, type: z.literal("shortQuiz"), questions: z.array(question).min(1).max(100) }),
-  z.strictObject({ ...common, type: z.literal("finalQuiz"), questions: z.array(question).min(1).max(100) }),
+  z.strictObject({ ...common, type: z.literal("shortQuiz"), questions: z.array(question).min(1).max(100), content: quizContent }),
+  z.strictObject({ ...common, type: z.literal("finalQuiz"), questions: z.array(question).min(1).max(100), content: quizContent }),
   z.strictObject({ ...common, type: z.literal("guidedLab"), content: z.strictObject({
     objective: text, tools: items.min(1), prerequisites: items.default([]),
     setup: text, safety: text, troubleshooting: text.optional(),

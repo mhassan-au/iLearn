@@ -5,6 +5,7 @@ import type { learningClient } from "../../lib/learning";
 import { submitQuiz } from "./quiz-actions";
 import { QuizForm } from "./quiz-form";
 import { Toast } from "../components/toast";
+import { QuizRecap } from "./quiz-recap";
 
 type Option = { id: string; label: string };
 type Question = {
@@ -51,6 +52,7 @@ export async function Quiz({ client, chapter, activity, formal, attempt, errorCo
             </li>
           ))}
         </ol>
+        <QuizRecap client={client} chapter={chapter} activity={activity} attempt={attempt} />
         <div className="flex flex-wrap items-center gap-4">
           <Link className="button" href={formal ? "/dashboard" : `/learn/${encodeURIComponent(chapter)}`}>Continue learning</Link>
           <Link href={path}>Try again</Link>

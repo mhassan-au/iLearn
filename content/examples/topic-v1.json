@@ -76,6 +76,16 @@
             "description": "Check your understanding of evidence.",
             "estimatedMinutes": 5,
             "order": 4,
+            "content": {
+              "recap": {
+                "summary": ["State what the evidence shows and note what you cannot conclude from it."],
+                "roles": [
+                  { "title": "Inventory manager", "actions": ["Assign a person to review the weekly report and agree when the review is due."] },
+                  { "title": "Operations team", "actions": ["Record who reviewed the report and when. Retrieve a report from an earlier week to check that the record is available."] }
+                ],
+                "assurance": ["Request evidence from more than one week before making a finding about how often reviews happen."]
+              }
+            },
             "questions": [{
               "id": "missing-review",
               "question": "A single report has no reviewer listed. What does that support?",
