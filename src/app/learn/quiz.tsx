@@ -21,30 +21,30 @@ const accessDate = new Intl.DateTimeFormat("en-AU", {
 });
 const uuidPattern = /^[0-9a-f]{8}(?:-[0-9a-f]{4}){3}-[0-9a-f]{12}$/i;
 
-export async function Quiz({ client, chapter, activity, formal, passingScore, attempt, errorCode, justSubmitted }: {
+export async function Quiz({ client, chapter, activity, formal, attempt, errorCode, justSubmitted }: {
   client: Awaited<ReturnType<typeof learningClient>>;
-  chapter: string; activity: string; formal: boolean; passingScore: number;
+  chapter: string; activity: string; formal: boolean;
   attempt?: string; errorCode?: string; justSubmitted: boolean;
 }) {
   const path = `/learn/${encodeURIComponent(chapter)}?activity=${encodeURIComponent(activity)}`;
-  const history = await client.from("quiz_attempts").select("id,score,passed,submitted_at")
+  const history = await client.from("quiz_attempts").select("id,submitted_at")
     .eq("activity_id", activity).order("submitted_at", { ascending: false }).limit(20);
 
   let body;
   if (attempt) {
     const result = uuidPattern.test(attempt) ? await client.from("quiz_attempts")
-      .select("score,passed,review").eq("activity_id", activity).eq("id", attempt).maybeSingle() : null;
+      .select("review").eq("activity_id", activity).eq("id", attempt).maybeSingle() : null;
     if (result?.data) {
-      const { score, passed, review } = result.data;
+      const review = result.data.review as Review[];
       body = <>
-        {justSubmitted && <Toast key={attempt} message={formal && passed ? "Assessment passed. Your result is saved." : "Quiz submitted. Your result is saved."} />}
-        <h3 className="text-lg font-semibold">Result: {score}%{formal ? (passed ? " · Passed" : " · Not passed") : ""}</h3>
-        {formal && !passed && <p>The passing score is {passingScore}%. You can try again.</p>}
+        {justSubmitted && <Toast key={attempt} message="Knowledge check complete. Your feedback is ready." />}
+        <h3 className="text-lg font-semibold">Review your answers</h3>
+        {review.some((item) => !item.correct) && <p>Use the explanations to see what to practise. You can continue now or try again.</p>}
         <ol className="space-y-3">
-          {(review as Review[]).map((item, index) => (
+          {review.map((item, index) => (
             <li key={index} className="rounded-xl border border-[var(--border)] p-4">
               <h4 className="font-semibold">{index + 1}. {item.question}</h4>
-              <p>{item.correct ? "Correct" : "Incorrect"}</p>
+              <p>{item.correct ? "Understood" : "Worth revisiting"}</p>
               <p>Your answer: {item.options.filter((option) => item.selected.includes(option.id)).map((option) => option.label).join(", ")}</p>
               <p>Correct answer: {item.options.filter((option) => item.correct_options.includes(option.id)).map((option) => option.label).join(", ")}</p>
               <p>{item.explanation}</p>
@@ -52,7 +52,7 @@ export async function Quiz({ client, chapter, activity, formal, passingScore, at
           ))}
         </ol>
         <div className="flex flex-wrap items-center gap-4">
-          {passed && <Link className="button" href={formal ? "/dashboard" : `/learn/${encodeURIComponent(chapter)}`}>Continue learning</Link>}
+          <Link className="button" href={formal ? "/dashboard" : `/learn/${encodeURIComponent(chapter)}`}>Continue learning</Link>
           <Link href={path}>Try again</Link>
         </div>
       </>;
@@ -68,7 +68,7 @@ export async function Quiz({ client, chapter, activity, formal, passingScore, at
       body = <p role="alert">Questions are unavailable for this quiz.</p>;
     } else {
       body = <>
-        <p>{questions.length} {questions.length === 1 ? "question" : "questions"}{formal ? ` · ${passingScore}% to pass` : " · Feedback after submission"}</p>
+        <p>{questions.length} {questions.length === 1 ? "question" : "questions"} · Feedback after submission</p>
         {errorCode?.startsWith("quiz-") && <p className="form-error" role="alert">{errorCode === "quiz-answers"
           ? "Select a valid answer for every question and try again."
           : "Your quiz could not be submitted. Please try again."}</p>}
@@ -99,7 +99,7 @@ export async function Quiz({ client, chapter, activity, formal, passingScore, at
       <ol className="mt-2 space-y-1">
         {history.data.map((row) => <li key={row.id}>
           <Link href={`${path}&attempt=${encodeURIComponent(row.id)}`}>
-            {accessDate.format(new Date(row.submitted_at))} · {row.score}%{formal ? (row.passed ? " · Passed" : " · Not passed") : ""}
+            Review from {accessDate.format(new Date(row.submitted_at))}
           </Link>
         </li>)}
       </ol>

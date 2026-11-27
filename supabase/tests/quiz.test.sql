@@ -26,7 +26,7 @@ set local role authenticated;
 select is((select count(*)::int from quiz_questions_for_learner('cia-triad','chapter-check') where hint is not null), 0, 'Formal assessment has no hints');
 select ok(submit_quiz('cia-triad','chapter-check','{"disclosure":["c"],"controls":["backup"]}',
   '60000000-0000-4000-8000-000000000012') is not null, 'Formal attempt is recorded below pass mark');
-select is((select completed from chapter_outline('cia-triad') where id='chapter-check'), false, 'Partial multiple-answer response fails');
+select is((select completed from chapter_outline('cia-triad') where id='chapter-check'), true, 'A submitted knowledge check completes regardless of answer accuracy');
 select ok(submit_quiz('cia-triad','chapter-check','{"disclosure":["c"],"controls":["restore","backup"]}',
   '60000000-0000-4000-8000-000000000013') is not null, 'Exact set is accepted in any order');
 select ok((select passed from quiz_attempts where id='60000000-0000-4000-8000-000000000013'), 'Exact set passes the formal quiz');

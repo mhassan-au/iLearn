@@ -23,7 +23,7 @@ export default async function Learn({ params, searchParams }: {
   const [{ chapter }, query] = await Promise.all([params, searchParams]);
   const client = await learningClient();
   const [info, outline] = await Promise.all([
-    client.from("chapters").select("id,title,description,passing_score").eq("id", chapter).maybeSingle(),
+    client.from("chapters").select("id,title,description").eq("id", chapter).maybeSingle(),
     client.rpc("chapter_outline", { target_chapter: chapter }),
   ]);
   if (info.error || outline.error) throw new Error("Could not load chapter");
@@ -83,7 +83,7 @@ export default async function Learn({ params, searchParams }: {
             {!current.unlocked ? <p>Complete the earlier modules and required activities to unlock this one.</p>
               : current.type === "shortQuiz" || current.type === "finalQuiz" ? (
                 <Quiz client={client} chapter={chapter} activity={current.id} formal={current.type === "finalQuiz"}
-                  passingScore={info.data.passing_score} attempt={query.attempt} errorCode={query.error} justSubmitted={query.notice === "quiz-submitted"} />
+                  attempt={query.attempt} errorCode={query.error} justSubmitted={query.notice === "quiz-submitted"} />
               ) : current.type === "guidedLab" || current.type === "independentLab" ? (
                 <Lab client={client} chapter={chapter} activity={current.id} guided={current.type === "guidedLab"}
                   completed={current.completed} reveal={query.solution === "show"} saved={query.saved} errorCode={query.error} />

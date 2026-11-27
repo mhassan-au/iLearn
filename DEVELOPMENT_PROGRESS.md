@@ -1,5 +1,9 @@
 # Development progress
 
+## Learning-focused progression
+
+Quiz scores and pass labels are hidden from learners. Completing a knowledge check means submitting a valid response, regardless of accuracy. Answer explanations and retry history remain available. Labs retain their practical completion checklists and support optional private confidence reflections. Topics and modules display Foundational, Applied or Advanced difficulty.
+
 ## Milestone 1
 
 Implemented the responsive shell, provisioned-account username and password sign-in via Supabase Auth, persistent sessions, sign-out, protected dashboard, migration, access-policy tests and fictional sample chapter. The fixture covers two lessons, two short quizzes, a guided lab, an independent lab and a final quiz.

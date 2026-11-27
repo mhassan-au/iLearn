@@ -1,6 +1,7 @@
 // Catalogue of topics visible to the current learner.
 import Link from "next/link";
 import { learningClient } from "../../lib/learning";
+import { difficultyLabel } from "../../lib/difficulty";
 
 export default async function Topics() {
   const client = await learningClient();
@@ -16,7 +17,7 @@ export default async function Topics() {
           <article className="panel space-y-3" key={topic.slug}>
             <h2><Link href={`/topics/${topic.slug}`}>{topic.title}</Link></h2>
             <p>{topic.description}</p>
-            <p className="capitalize">{topic.difficulty} · {topic.modules[0]?.count ?? 0} modules · {topic.estimated_minutes} min</p>
+            <p>{difficultyLabel(topic.difficulty)} · {topic.modules[0]?.count ?? 0} modules · {topic.estimated_minutes} min</p>
             <p>Access included</p>
           </article>
         ))}

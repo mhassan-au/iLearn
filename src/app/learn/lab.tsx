@@ -34,7 +34,7 @@ export async function Lab({ client, chapter, activity, guided, completed, reveal
 }) {
   const [body, progress] = await Promise.all([
     client.rpc("read_lab", { target_chapter: chapter, target_activity: activity }),
-    client.from("lab_progress").select("completed_steps,notes").eq("activity_id", activity).maybeSingle(),
+    client.from("lab_progress").select("completed_steps,notes,self_assessment").eq("activity_id", activity).maybeSingle(),
   ]);
   if (body.error || progress.error || !body.data) return <p role="alert">The lab could not be loaded.</p>;
   const lab = body.data as LabContent;
@@ -91,6 +91,15 @@ export async function Lab({ client, chapter, activity, guided, completed, reveal
       <label className="block font-semibold">Your notes
         <textarea name="notes" rows={5} maxLength={10000} defaultValue={progress.data?.notes ?? ""}
           className="mt-2 block w-full rounded-lg border border-[var(--border)] p-3 font-normal" />
+      </label>
+      <label className="block font-semibold">How independently could you do this again? <span className="font-normal">(optional)</span>
+        <select name="confidence" defaultValue={progress.data?.self_assessment ?? ""}
+          className="mt-2 block w-full rounded-lg border border-[var(--border)] p-3 font-normal">
+          <option value="">Choose if useful</option>
+          <option value="needs-practice">Needs practice</option>
+          <option value="with-guidance">Can do with guidance</option>
+          <option value="independently">Can do independently</option>
+        </select>
       </label>
       <div className="flex flex-wrap gap-3">
         {!completed && <ActionButton name="intent" value="complete" pendingLabel="Completing lab…">Mark lab complete</ActionButton>}

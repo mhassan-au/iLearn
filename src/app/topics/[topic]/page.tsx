@@ -2,6 +2,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { learningClient } from "../../../lib/learning";
+import { difficultyLabel } from "../../../lib/difficulty";
 import { ChapterList } from "../components/chapter-list";
 import { learningPercent, NextActivity, type LearningSummary } from "../../components/next-activity";
 
@@ -14,11 +15,12 @@ type ModuleProgress = {
 export default async function Topic({ params }: { params: Promise<{ topic: string }> }) {
   const { topic } = await params;
   const client = await learningClient();
-  const result = await client.from("topics").select("id,title,description,objectives").eq("slug", topic).maybeSingle();
+  const result = await client.from("topics").select("id,title,description,objectives,difficulty").eq("slug", topic).maybeSingle();
   if (result.error) throw new Error("Could not load topic");
   if (!result.data) notFound();
+  const topicDifficulty = result.data.difficulty;
   const [moduleList, progress, resume] = await Promise.all([
-    client.from("modules").select("id,title,description,estimated_minutes").eq("topic_id", result.data.id).order("sort_order"),
+    client.from("modules").select("id,title,description,estimated_minutes,difficulty").eq("topic_id", result.data.id).order("sort_order"),
     client.rpc("topic_module_progress", { target_topic: result.data.id })
       .select("module_id,percent,last_accessed,completed_count,activity_count,completed_at,unlocked"),
     client.rpc("learning_resume", { target_topic: result.data.id }),
@@ -64,6 +66,7 @@ export default async function Topic({ params }: { params: Promise<{ topic: strin
                       <span className="mt-2 block space-y-2 text-sm font-normal">
                         <span className="flex flex-wrap gap-x-4 gap-y-1">
                           <span>{summary.completed_at ? "Complete" : `${summary.percent}% complete`}</span>
+                          <span>{difficultyLabel(module.difficulty ?? topicDifficulty)}</span>
                           <span>Last accessed: {summary.last_accessed
                             ? <time dateTime={summary.last_accessed}>{accessDate.format(new Date(summary.last_accessed))}</time>
                             : "Not yet accessed"}</span>

@@ -53,7 +53,8 @@ const overview = { id, slug: id, title, description: text, estimatedMinutes: min
 const chapter = z.strictObject({ ...overview, passingScore: z.number().int().min(1).max(100).default(80),
   progressionMode: z.enum(["sequential", "flexible"]).default("sequential"),
   activities: z.array(activity).min(1).max(100) });
-const moduleSchema = z.strictObject({ ...overview, chapters: z.array(chapter).min(1).max(50) });
+const moduleSchema = z.strictObject({ ...overview, difficulty: z.enum(["beginner", "intermediate", "advanced"]).optional(),
+  chapters: z.array(chapter).min(1).max(50) });
 const schema = z.strictObject({
   schemaVersion: z.literal("1.0"),
   topic: z.strictObject({ ...overview, difficulty: z.enum(["beginner", "intermediate", "advanced"]).default("beginner"),
