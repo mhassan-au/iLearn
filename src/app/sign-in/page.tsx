@@ -22,7 +22,7 @@ export default async function SignIn({ searchParams }: { searchParams: Promise<{
           <label className="block">Password<input name="password" type="password" autoComplete="current-password" maxLength={1024} required /></label>
           <button className="button" type="submit">Sign in</button>
         </form>
-      ) : <p>Sign-in becomes available once Supabase is configured.</p>}
+      ) : <p>Sign-in is unavailable. Check that Supabase is configured with the project URL and publishable key.</p>}
     </section>
   );
 }

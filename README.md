@@ -31,6 +31,8 @@ Keep the Email provider enabled in Supabase and disable public signup. The inter
 3. Push the source to your Git provider and import it as a Next.js project in Vercel. Set Node.js to 22.x and configure the two variables from `.env.example` with the hosted Supabase URL and publishable key. Keep database credentials and secret keys out of the app environment.
 4. Deploy and set Supabase Auth's **Site URL** to your canonical Vercel URL. Run the manual sign-in checks against the deployment.
 
+Set `NEXT_PUBLIC_SUPABASE_URL` to the base project URL shown in Supabase Connect, such as `https://<project-ref>.supabase.co`. The SDK supplies the Auth and Data API paths. Set `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` to the `sb_publishable_…` key. Restart the local server or redeploy after changing these values.
+
 Supabase SSR keeps the session in persistent cookies and refreshes tokens as needed. Keep Supabase's time-box and inactivity limits unset, or set them to cover your desired number of weeks.
 
 The sign-in proxy follows the [Supabase SSR session guidance](https://supabase.com/docs/guides/auth/server-side/creating-a-client?framework=nextjs).
