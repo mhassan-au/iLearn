@@ -26,3 +26,15 @@ export async function completeLesson(chapter: string, activity: string) {
   revalidatePath("/topics/[topic]", "page");
   redirect(`${path}?notice=lesson-complete`);
 }
+
+export async function resetChapter(chapter: string) {
+  const client = await learningClient();
+  const path = `/learn/${encodeURIComponent(chapter)}`;
+  const { data, error } = await client.rpc("reset_chapter", { target_chapter: chapter });
+  if (error || !data) redirect(`${path}?error=chapter-reset`);
+  revalidatePath("/dashboard");
+  revalidatePath("/progress");
+  revalidatePath("/topics", "layout");
+  revalidatePath(path);
+  redirect(`${path}?notice=chapter-reset`);
+}

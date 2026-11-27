@@ -4,7 +4,7 @@ import { notFound } from "next/navigation";
 import Markdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import { learningClient } from "../../../lib/learning";
-import { completeLesson } from "../actions";
+import { completeLesson, resetChapter } from "../actions";
 import { ActivityVisit } from "../activity-visit";
 import { Quiz } from "../quiz";
 import { Lab } from "../lab";
@@ -63,7 +63,9 @@ export default async function Learn({ params, searchParams }: {
   return (
     <div className="space-y-6">
       {query.notice === "lesson-complete" && <Toast message="Lesson complete. Your progress is saved." />}
+      {query.notice === "chapter-reset" && <Toast message="Chapter reset. Your lab notes are still saved." />}
       {query.error === "completion" && <Toast tone="error" message="Your lesson completion couldn’t be saved." />}
+      {query.error === "chapter-reset" && <Toast tone="error" message="This chapter could not be reset." />}
       <Link href="/topics">All topics</Link>
       {current?.unlocked && <ActivityVisit chapter={chapter} activity={current.id} />}
       <header className="space-y-3">
@@ -88,6 +90,13 @@ export default async function Learn({ params, searchParams }: {
               ? <Link href={recapUrl} aria-current={showRecap ? "page" : undefined}>{recapTitle}</Link>
               : <><span>{recapTitle}</span><small className="block">Unlocks after the final quiz</small></>}
           </div>
+          {!!open.length && <details className="mt-4 border-t border-[var(--border)] pt-3">
+            <summary className="cursor-pointer font-semibold">Reset chapter</summary>
+            <p className="my-3 text-sm">This clears completion, quiz attempts, lab checklists and self-assessments for this chapter. Your lab notes stay. Deleted quiz attempts can’t be recovered, and later modules may lock until you finish again.</p>
+            <form action={resetChapter.bind(null, chapter)}>
+              <ActionButton className="button button-secondary" pendingLabel="Resetting…">Confirm reset</ActionButton>
+            </form>
+          </details>}
         </details>
         <article className="panel min-w-0 space-y-5">
           {showRecap ? <>
