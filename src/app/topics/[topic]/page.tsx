@@ -18,13 +18,18 @@ export default async function Topic({ params }: { params: Promise<{ topic: strin
   if (!result.data) notFound();
   const [moduleList, progress] = await Promise.all([
     client.from("modules").select("id,title,description,estimated_minutes").eq("topic_id", result.data.id).order("sort_order"),
-    client.rpc("topic_module_progress", { target_topic: result.data.id }),
+    client.rpc("topic_module_progress", { target_topic: result.data.id })
+      .select("module_id,percent,last_accessed,completed_count,activity_count,completed_at,unlocked"),
   ]);
   if (moduleList.error) throw new Error("Could not load modules");
   const modules = moduleList.data;
-  const summaries: ModuleProgress[] = progress.data ?? [];
+  const summaries: ModuleProgress[] = Array.isArray(progress.data) ? progress.data : [];
+  const hasTotals = !progress.error && Array.isArray(progress.data) && summaries.length === modules.length &&
+    summaries.every((row) => Number.isSafeInteger(row.completed_count) &&
+      Number.isSafeInteger(row.activity_count) && row.completed_count >= 0 &&
+      row.activity_count >= row.completed_count);
   const progressByModule = new Map(summaries.map((row) => [row.module_id, row]));
-  const counts = summaries.reduce((sum, row) => ({
+  const counts = (hasTotals ? summaries : []).reduce((sum, row) => ({
     completed: sum.completed + row.completed_count, total: sum.total + row.activity_count,
   }), { completed: 0, total: 0 });
   const topicPercent = counts.total ? Math.floor(100 * counts.completed / counts.total) : 0;
@@ -44,9 +49,8 @@ export default async function Topic({ params }: { params: Promise<{ topic: strin
       {!!result.data.objectives.length && <ul className="list-disc pl-6">{result.data.objectives.map((item: string) => <li key={item}>{item}</li>)}</ul>}
       <section className="panel space-y-3" aria-label="Topic progress">
         <h2>Topic progress</h2>
-        {progress.error ? <p>Progress is temporarily unavailable.</p> : <>
+        {!hasTotals ? <p>Progress is temporarily unavailable.</p> : <>
           <p><strong>{topicPercent}% complete</strong> · {counts.completed} of {counts.total} activities</p>
-          <progress className="learning-progress" max={100} value={topicPercent} aria-label="Overall topic progress" />
           <p>Last completed module: {lastModule?.title ?? "None yet"}</p>
         </>}
       </section>
