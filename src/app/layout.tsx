@@ -16,7 +16,10 @@ export default function Layout({ children }: Readonly<{ children: React.ReactNod
         <header className="site-header">
           <nav className="frame flex flex-wrap items-center justify-between gap-4" aria-label="Main navigation">
             <Link className="brand" href="/">SelfLearn</Link>
-            <Link href="/dashboard">My learning</Link>
+            <div className="flex flex-wrap gap-5">
+              <Link href="/topics">Topics</Link>
+              <Link href="/dashboard">My learning</Link>
+            </div>
           </nav>
         </header>
         <main className="frame content" id="main" tabIndex={-1}>{children}</main>

@@ -39,3 +39,11 @@ input { display: block; width: 100%; border: 1px solid var(--border); padding: .
 :focus-visible { outline: 3px solid var(--accent); outline-offset: 4px; }
 .skip { position: absolute; top: -5rem; left: 1rem; background: var(--surface); padding: .5rem; }
 .skip:focus { top: .5rem; }
+.lesson-body > * + * { margin-block-start: 1rem; }
+.lesson-body :is(h1, h2, h3, h4) { font-size: 1.3rem; font-weight: 700; }
+.lesson-body ul { list-style: disc; padding-inline-start: 1.5rem; }
+.lesson-body ol { list-style: decimal; padding-inline-start: 1.5rem; }
+.lesson-body :is(pre, table) { display: block; max-width: 100%; overflow-x: auto; }
+.lesson-body :is(pre, blockquote) { background: var(--background); padding: 1rem; border-radius: .5rem; }
+.lesson-body :is(th, td) { border: 1px solid var(--border); padding: .5rem .75rem; }
+.lesson-body img { max-width: 100%; height: auto; }

@@ -8,6 +8,12 @@ See [README](README.md) for setup, verification and deployment steps. Hosting an
 
 TypeScript, the production build and static seed checks passed. The SQL policy suite and signed-in browser checks await a Supabase test environment. Docker was unavailable in the development environment.
 
+## Milestone 2
+
+Implemented the catalogue, topic and module overviews, chapter outline, safe Markdown lesson reader, and lesson completion. Supabase enforces published access and required activity order within each sequential chapter. Flexible chapters allow any published free activity. Quiz and lab placeholders preserve the chapter sequence until their respective milestones.
+
+Applied the navigation migration and sample seed to the hosted iLearn project. The production build passed. A transaction on the linked database verified the seven-activity outline, locked lesson access, lesson completion and quiz unlocking, then rolled back. The full pgTAP suite still requires Docker.
+
 ## Next milestone
 
-Learning navigation adds catalogue and detail pages, safe Markdown rendering, activity navigation and server-side sequential access checks. Quiz grading, lab interactions, progress aggregation, administration and entitlement management follow in their respective milestones.
+The quiz engine adds short quizzes, protected final assessments, server-side grading, retries and attempt history. Lab interactions, progress aggregation, administration and entitlement management follow in their respective milestones.
