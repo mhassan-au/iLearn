@@ -1,6 +1,6 @@
 "use server";
 
-// Authenticate provisioned usernames through Supabase Auth's email provider.
+// Authenticate provisioned email addresses and iLearn usernames through Supabase.
 import { redirect } from "next/navigation";
 import { requestClient } from "../../lib/supabase";
 
@@ -9,16 +9,15 @@ export async function signIn(form: FormData) {
   if (!client) redirect("/sign-in");
   const username = form.get("username");
   const password = form.get("password");
-  // Accept the username or its internal address as shown in Supabase Studio.
-  const normalized = typeof username === "string"
-    ? username.trim().toLowerCase().replace(/@ilearn\.invalid$/, "")
-    : "";
-  if (!/^[a-z0-9][a-z0-9_-]{2,31}$/.test(normalized) ||
+  // Full email addresses use the Supabase account directly. Bare usernames use the internal domain.
+  const normalized = typeof username === "string" ? username.trim().toLowerCase() : "";
+  const email = /^[a-z0-9][a-z0-9_-]{2,31}$/.test(normalized) ? `${normalized}@ilearn.invalid` : normalized;
+  if (email.length > 254 || !/^[^\s@]+@[^\s@]+$/.test(email) ||
       typeof password !== "string" || !password || password.length > 1024) {
     redirect("/sign-in?error=input");
   }
   const { error } = await client.auth.signInWithPassword({
-    email: `${normalized}@ilearn.invalid`,
+    email,
     password,
   });
   if (error) {

@@ -16,9 +16,9 @@ export default async function SignIn({ searchParams }: { searchParams: Promise<{
           {error && <p role="alert">{error === "unavailable"
             ? "Sign-in is temporarily unavailable. Try again in a moment."
             : error === "input"
-              ? "Enter your iLearn username and password. You can use the full internal address shown in Supabase."
-              : "Could not sign in. Check your username and password and try again."}</p>}
-          <label className="block">Username<input name="username" autoComplete="username" autoCapitalize="none" spellCheck={false} maxLength={47} required /></label>
+              ? "Enter your email or iLearn username, and your password."
+              : "Could not sign in. Check your email or username and password, then try again."}</p>}
+          <label className="block">Email or username<input name="username" autoComplete="username" autoCapitalize="none" spellCheck={false} maxLength={254} required /></label>
           <label className="block">Password<input name="password" type="password" autoComplete="current-password" maxLength={1024} required /></label>
           <button className="button" type="submit">Sign in</button>
         </form>
