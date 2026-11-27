@@ -47,3 +47,17 @@ input { display: block; width: 100%; border: 1px solid var(--border); padding: .
 .lesson-body :is(pre, blockquote) { background: var(--background); padding: 1rem; border-radius: .5rem; }
 .lesson-body :is(th, td) { border: 1px solid var(--border); padding: .5rem .75rem; }
 .lesson-body img { max-width: 100%; height: auto; }
+.learning-progress {
+  display: block;
+  width: min(100%, 34rem);
+  height: .75rem;
+  appearance: none;
+  border: 1px solid var(--border);
+  border-radius: 99px;
+  overflow: hidden;
+  background: var(--background);
+  accent-color: var(--accent);
+}
+.learning-progress::-webkit-progress-bar { background: var(--background); }
+.learning-progress::-webkit-progress-value { background: var(--accent); }
+.learning-progress::-moz-progress-bar { background: var(--accent); }

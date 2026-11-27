@@ -30,7 +30,7 @@ export default async function Learn({ params, searchParams }: {
   const itemsDone = activities.filter((item) => item.completed).length;
   const current = query.activity
     ? activities.find((item) => item.id === query.activity)
-    : open.find((item) => !item.completed) ?? open.at(-1);
+    : open.find((item) => !item.completed) ?? open.at(-1) ?? activities[0];
   if (query.activity && !current) notFound();
 
   let lesson: { markdown?: string; objectives?: string[]; takeaways?: string[] } | null = null;
@@ -74,7 +74,7 @@ export default async function Learn({ params, searchParams }: {
             <h2>{current.title}</h2>
             <p>{current.description}</p>
             {query.error === "completion" && <p role="alert">Completion could not be saved. Please try again.</p>}
-            {!current.unlocked ? <p>Complete the earlier required activities to unlock this one.</p>
+            {!current.unlocked ? <p>Complete the earlier modules and required activities to unlock this one.</p>
               : current.type !== "lesson" ? <p>{current.type.endsWith("Quiz") ? "This quiz will be available when the assessment tools are ready." : "This lab will be available when the lab tools are ready."}</p>
               : lesson ? <>
                 {!!lesson.objectives?.length && <section><h3 className="font-semibold">Learning objectives</h3>
