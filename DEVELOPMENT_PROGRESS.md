@@ -28,6 +28,10 @@ Guided and independent labs now show required tools, instructions or tasks, chec
 
 My progress lists topic completion, completed labs, recent quiz results and completed lessons. Each history entry links back to the relevant activity or attempt. Topic pages provide the module and chapter breakdown.
 
+## Milestone 6
+
+The protected content editor validates versioned topic JSON, previews its contents and reports which IDs already exist. Imports update matching IDs as drafts and preserve learner records. The content list provides publish, unpublish and archive controls.
+
 ## Next milestone
 
-Content administration, entitlement management and deployment readiness follow in their respective milestones.
+Entitlement management and deployment readiness follow next.

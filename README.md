@@ -38,3 +38,15 @@ Set `NEXT_PUBLIC_SUPABASE_URL` to the base project URL shown in Supabase Connect
 Supabase SSR keeps the session in persistent cookies and refreshes tokens as needed. Keep Supabase's time-box and inactivity limits unset, or set them to cover your desired number of weeks.
 
 The sign-in proxy follows the [Supabase SSR session guidance](https://supabase.com/docs/guides/auth/server-side/creating-a-client?framework=nextjs).
+
+## Prepare your first topic
+
+Use the [versioned import format](content/IMPORT_FORMAT.md). To enable `/admin`, set your account's role to `administrator` from the Supabase SQL Editor, using its user ID from Authentication → Users.
+
+```sql
+insert into public.profiles (user_id, role)
+values ('YOUR_AUTH_USER_UUID', 'administrator')
+on conflict (user_id) do update set role = excluded.role;
+```
+
+Sign in and open `/admin`. Validate and preview your JSON, save it as a draft, then select **Publish topic and drafts** when ready.

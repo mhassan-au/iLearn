@@ -1,0 +1,90 @@
+{
+  "schemaVersion": "1.0",
+  "topic": {
+    "id": "sample-evidence",
+    "slug": "sample-evidence",
+    "title": "Working with assessment evidence",
+    "description": "A short authoring example with fictional evidence.",
+    "estimatedMinutes": 25,
+    "order": 2,
+    "modules": [{
+      "id": "sample-evidence-foundations",
+      "slug": "foundations",
+      "title": "Assessment foundations",
+      "description": "Connect claims to evidence.",
+      "estimatedMinutes": 25,
+      "order": 1,
+      "chapters": [{
+        "id": "sample-evidence-chapter",
+        "slug": "evidence",
+        "title": "Evidence and conclusions",
+        "description": "Distinguish observations from conclusions.",
+        "estimatedMinutes": 25,
+        "order": 1,
+        "activities": [
+          {
+            "id": "sample-evidence-lesson",
+            "title": "From observation to conclusion",
+            "type": "lesson",
+            "description": "Learn to state the limits of an observation.",
+            "estimatedMinutes": 5,
+            "order": 1,
+            "content": { "markdown": "An **observation** records what you saw. A conclusion explains what the observation supports." }
+          },
+          {
+            "id": "sample-evidence-guided",
+            "title": "Write an observation",
+            "type": "guidedLab",
+            "description": "Practise with a fictional record.",
+            "estimatedMinutes": 7,
+            "order": 2,
+            "content": {
+              "objective": "Write an observation and a limited conclusion.",
+              "tools": ["Text editor"],
+              "setup": "Open a blank text file.",
+              "safety": "Use only the fictional example provided.",
+              "steps": [{
+                "id": "record",
+                "title": "Record what the evidence shows",
+                "instructions": "A fictional booking export has a blank date field. Record the observation before suggesting what to check next.",
+                "expectedResult": "A sentence identifying the missing value and one follow-up question."
+              }]
+            }
+          },
+          {
+            "id": "sample-evidence-independent",
+            "title": "Assess a fictional record",
+            "type": "independentLab",
+            "description": "Apply the distinction independently.",
+            "estimatedMinutes": 8,
+            "order": 3,
+            "content": {
+              "scenario": "A fictional retailer presents one weekly stock report with no reviewer listed.",
+              "tools": ["Text editor"],
+              "tasks": ["Separate the observation from your conclusion."],
+              "deliverables": ["Two labelled sentences"],
+              "checklist": [{ "id": "sentences", "label": "I wrote both sentences." }]
+            },
+            "solution": "The supplied report does not identify a reviewer. Ask for review records before concluding that reviews never happen."
+          },
+          {
+            "id": "sample-evidence-final",
+            "title": "Chapter assessment",
+            "type": "finalQuiz",
+            "description": "Check your understanding of evidence.",
+            "estimatedMinutes": 5,
+            "order": 4,
+            "questions": [{
+              "id": "missing-review",
+              "question": "A single report has no reviewer listed. What does that support?",
+              "questionType": "single",
+              "options": [{ "id": "a", "label": "This report does not identify a reviewer." }, { "id": "b", "label": "No report has ever been reviewed." }],
+              "correctOptionIds": ["a"],
+              "explanation": "Evidence from one report does not establish what happens across all reports."
+            }]
+          }
+        ]
+      }]
+    }]
+  }
+}
