@@ -23,12 +23,18 @@ export default async function Topic({ params }: { params: Promise<{ topic: strin
       <h2>Modules</h2>
       {!modules.length && <p>No modules are published yet.</p>}
       <ol className="space-y-4">
-        {modules.map((module) => (
-          <li className="panel space-y-4" key={module.id}>
-            <h3 className="text-xl font-semibold">{module.title}</h3>
-            <p>{module.description} · {module.estimated_minutes} min</p>
-            <h4 className="font-semibold">Chapters</h4>
-            <ChapterList client={client} moduleId={module.id} />
+        {modules.map((module, index) => (
+          <li className="rounded-xl border border-[var(--border)] bg-[var(--surface)]" key={module.id}>
+            <details open={index === 0}>
+              <summary className="cursor-pointer rounded-xl p-4 text-lg font-semibold">
+                {module.title}
+              </summary>
+              <div className="space-y-4 px-4 pb-4">
+                <p>{module.description} · {module.estimated_minutes} min</p>
+                <h3 className="font-semibold">Chapters</h3>
+                <ChapterList client={client} moduleId={module.id} />
+              </div>
+            </details>
           </li>
         ))}
       </ol>
