@@ -14,7 +14,7 @@ SelfLearn is a linear, self-paced learning platform. Milestone 1 provides a prot
 
 In a supported browser, open a lesson and select **Listen to lesson**. Pause, resume and stop playback. Starting playback does not change completion. Leaving the lesson stops the audio.
 
-To replay a chapter, open **Reset chapter** in its outline and confirm. This removes quiz attempts and clears the chapter's completion and lab checklists. General and per-step lab notes are kept.
+To replay a chapter, open **Reset chapter** below the chapter progress and confirm. This removes quiz attempts and clears the chapter's completion and lab checklists. General and per-step lab notes are kept.
 
 - Run `npm run typecheck`, `npm run build` and `supabase test db`.
 - Open My learning in a private window. It should redirect to sign-in.

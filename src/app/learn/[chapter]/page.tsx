@@ -75,6 +75,13 @@ export default async function Learn({ params, searchParams }: {
           {itemsDone} of {activities.length} activities complete
           <progress className="block w-full max-w-sm" max={activities.length} value={itemsDone} />
         </label>}
+        {!!open.length && <details className="max-w-lg">
+          <summary className="cursor-pointer font-semibold text-[var(--accent)]">Reset chapter</summary>
+          <p className="my-3 text-sm">This clears completion, quiz attempts, lab checklists and self-assessments for this chapter. Your lab notes stay. Deleted quiz attempts can’t be recovered, and later modules may lock until you finish again.</p>
+          <form action={resetChapter.bind(null, chapter)}>
+            <ActionButton className="button button-secondary" pendingLabel="Resetting…">Confirm reset</ActionButton>
+          </form>
+        </details>}
       </header>
       <div className="grid items-start gap-5 md:grid-cols-[minmax(13rem,1fr)_minmax(0,3fr)]">
         <details open className="panel">
@@ -90,13 +97,6 @@ export default async function Learn({ params, searchParams }: {
               ? <Link href={recapUrl} aria-current={showRecap ? "page" : undefined}>{recapTitle}</Link>
               : <><span>{recapTitle}</span><small className="block">Unlocks after the final quiz</small></>}
           </div>
-          {!!open.length && <details className="mt-4 border-t border-[var(--border)] pt-3">
-            <summary className="cursor-pointer font-semibold">Reset chapter</summary>
-            <p className="my-3 text-sm">This clears completion, quiz attempts, lab checklists and self-assessments for this chapter. Your lab notes stay. Deleted quiz attempts can’t be recovered, and later modules may lock until you finish again.</p>
-            <form action={resetChapter.bind(null, chapter)}>
-              <ActionButton className="button button-secondary" pendingLabel="Resetting…">Confirm reset</ActionButton>
-            </form>
-          </details>}
         </details>
         <article className="panel min-w-0 space-y-5">
           {showRecap ? <>

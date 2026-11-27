@@ -64,6 +64,7 @@ export async function Lab({ client, chapter, activity, guided, completed, reveal
       <summary aria-label={`Edit note for ${noteLabel}`} title={`Edit note for ${noteLabel}`}
         className={progress.data?.step_notes?.[id] ? "lab-note-trigger has-note" : "lab-note-trigger"}>
         <span aria-hidden="true">✎</span>
+        <span>{progress.data?.step_notes?.[id] ? "Edit note" : "Add note"}</span>
       </summary>
       <div className="lab-note-popover space-y-2">
         <label className="block text-sm font-semibold">Note for {noteLabel}

@@ -127,7 +127,7 @@ input:not([type="radio"], [type="checkbox"]), textarea, select { background: var
 .quiz-difficulty-medium { color: var(--accent); background: color-mix(in srgb, var(--accent) 10%, var(--surface)); }
 .quiz-difficulty-hard { color: var(--error); background: color-mix(in srgb, var(--error) 9%, var(--surface)); }
 .lab-item-note { position: relative; flex: none; }
-.lab-note-trigger { display: grid; list-style: none; cursor: pointer; place-items: center; width: 2.15rem; height: 2.15rem; border: 1px solid var(--border); border-radius: .45rem; font-size: 1.15rem; }
+.lab-note-trigger { display: inline-flex; list-style: none; cursor: pointer; align-items: center; gap: .35rem; min-height: 2.15rem; padding: .15rem .55rem; border: 1px solid var(--border); border-radius: .45rem; font-size: .8rem; font-weight: 650; white-space: nowrap; }
 .lab-note-trigger::-webkit-details-marker { display: none; }
 .lab-item-note[open] .lab-note-trigger, .lab-note-trigger:hover, .lab-note-trigger.has-note {
   color: var(--accent); background: color-mix(in srgb, var(--accent) 12%, var(--surface));
