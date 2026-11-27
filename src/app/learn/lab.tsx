@@ -45,7 +45,7 @@ export async function Lab({ client, chapter, activity, guided, completed, reveal
 }) {
   const [body, progress] = await Promise.all([
     client.rpc("read_lab", { target_chapter: chapter, target_activity: activity }),
-    client.from("lab_progress").select("completed_steps,notes,self_assessment").eq("activity_id", activity).maybeSingle(),
+    client.from("lab_progress").select("completed_steps,notes,self_assessment,step_notes").eq("activity_id", activity).maybeSingle(),
   ]);
   if (body.error || progress.error || !body.data) return <p role="alert">The lab could not be loaded.</p>;
   const lab = body.data as LabContent;
@@ -54,11 +54,26 @@ export async function Lab({ client, chapter, activity, guided, completed, reveal
     ? await client.rpc("reveal_lab_solution", { target_chapter: chapter, target_activity: activity })
     : null;
 
-  const checkbox = (id: string, label: string) => <label className="flex items-start gap-3">
-    <input type="checkbox" name="step" value={id} defaultChecked={progress.data?.completed_steps.includes(id)}
-      className="!inline-block !w-auto" />
-    <span>{label}</span>
-  </label>;
+  const checkbox = (id: string, label: string, noteLabel = label) => <div className="flex items-start justify-between gap-3">
+    <label className="flex items-start gap-3">
+      <input type="checkbox" name="step" value={id} defaultChecked={progress.data?.completed_steps.includes(id)}
+        className="!inline-block !w-auto" />
+      <span>{label}</span>
+    </label>
+    <details className="lab-item-note">
+      <summary aria-label={`Edit note for ${noteLabel}`} title={`Edit note for ${noteLabel}`}
+        className={progress.data?.step_notes?.[id] ? "lab-note-trigger has-note" : "lab-note-trigger"}>
+        <span aria-hidden="true">✎</span>
+      </summary>
+      <div className="lab-note-popover space-y-2">
+        <label className="block text-sm font-semibold">Note for {noteLabel}
+          <textarea name={`itemNote:${id}`} rows={3} maxLength={500} defaultValue={progress.data?.step_notes?.[id] ?? ""}
+            className="mt-1 block w-full rounded border border-[var(--border)] p-2 font-normal" />
+        </label>
+        <ActionButton name="intent" value="save-item-note" className="button button-secondary" pendingLabel="Saving note…">Save note</ActionButton>
+      </div>
+    </details>
+  </div>;
 
   return <div className="space-y-5">
     <LabText title="Scenario" text={lab.scenario} />
@@ -94,7 +109,7 @@ export async function Lab({ client, chapter, activity, guided, completed, reveal
           <LabText title="Expected result" text={step.expectedResult} />
           <StepSupport label="Show hint" text={step.hint} />
           <StepSupport label="Show worked answer" text={step.workedAnswer} />
-          {checkbox(step.id, "Step complete")}
+          {checkbox(step.id, "Step complete", step.title)}
         </li>)}
       </ol> : <fieldset className="space-y-2">
         <legend className="font-semibold">Completion checklist</legend>

@@ -11,6 +11,7 @@ type Option = { id: string; label: string };
 type Question = {
   id: string; question: string; question_type: string; options: Option[];
   hint: string | null; points: number;
+  difficulty: "easy" | "medium" | "hard";
 };
 type Review = {
   question: string; options: Option[]; selected: string[]; correct_options: string[];
@@ -78,6 +79,9 @@ export async function Quiz({ client, chapter, activity, formal, attempt, errorCo
           {questions.map((question, index) => (
             <fieldset key={question.id} className="min-w-0 space-y-2 rounded-xl border border-[var(--border)] p-4">
               <legend className="px-1 font-semibold">{index + 1}. {question.question}</legend>
+              <span className={`quiz-difficulty quiz-difficulty-${question.difficulty ?? "medium"}`}>
+                {question.difficulty ?? "medium"}
+              </span>
               {question.question_type === "multiple" && <p className="text-sm">Select all that apply.</p>}
               {question.options.map((option) => (
                 <label className="flex items-start gap-3" key={option.id}>

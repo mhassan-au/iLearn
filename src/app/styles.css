@@ -122,3 +122,14 @@ input:not([type="radio"], [type="checkbox"]), textarea, select { background: var
 .learning-progress::-webkit-progress-bar { background: var(--background); }
 .learning-progress::-webkit-progress-value { background: var(--accent); }
 .learning-progress::-moz-progress-bar { background: var(--accent); }
+.quiz-difficulty { display: inline-block; padding: .05rem .55rem; border: 1px solid var(--border); border-radius: 1rem; text-transform: capitalize; font-size: .78rem; font-weight: 700; }
+.quiz-difficulty-easy { color: var(--success); background: color-mix(in srgb, var(--success) 10%, var(--surface)); }
+.quiz-difficulty-medium { color: var(--accent); background: color-mix(in srgb, var(--accent) 10%, var(--surface)); }
+.quiz-difficulty-hard { color: var(--error); background: color-mix(in srgb, var(--error) 9%, var(--surface)); }
+.lab-item-note { position: relative; flex: none; }
+.lab-note-trigger { display: grid; list-style: none; cursor: pointer; place-items: center; width: 2.15rem; height: 2.15rem; border: 1px solid var(--border); border-radius: .45rem; font-size: 1.15rem; }
+.lab-note-trigger::-webkit-details-marker { display: none; }
+.lab-item-note[open] .lab-note-trigger, .lab-note-trigger:hover, .lab-note-trigger.has-note {
+  color: var(--accent); background: color-mix(in srgb, var(--accent) 12%, var(--surface));
+}
+.lab-note-popover { position: absolute; z-index: 2; inset-inline-end: 0; top: calc(100% + .4rem); width: min(15rem, calc(100vw - 6rem)); padding: .75rem; border: 1px solid var(--border); border-radius: .65rem; background: var(--surface); box-shadow: var(--shadow); }

@@ -13,7 +13,7 @@ select ok(complete_lesson('cia-triad','intro'), 'Complete the prerequisite lesso
 select ok((select hint is not null from quiz_questions_for_learner('cia-triad','fundamentals')), 'Short quiz has a hint');
 select is(submit_quiz('cia-triad','fundamentals','{"control":["unknown"]}','60000000-0000-4000-8000-000000000010'),
   null::uuid, 'Unknown option is rejected');
-select is(submit_quiz('cia-triad','fundamentals','{"control":["b"]}','60000000-0000-4000-8000-000000000011'),
+select is(submit_quiz('cia-triad','fundamentals','{"control":["b"],"risk-statement":["o1"],"verify-control":["o3"]}','60000000-0000-4000-8000-000000000011'),
   '60000000-0000-4000-8000-000000000011'::uuid, 'Short quiz saves incorrect answer and feedback');
 select is((select score from quiz_attempts where activity_id='fundamentals'), 0::numeric, 'Incorrect answer earns zero');
 select ok((select completed from chapter_outline('cia-triad') where id='fundamentals'), 'Short quiz is complete on submission');
@@ -24,10 +24,10 @@ select '60000000-0000-4000-8000-000000000001', id, now() from activities
 where chapter_id='cia-triad' and sort_order between 3 and 6;
 set local role authenticated;
 select is((select count(*)::int from quiz_questions_for_learner('cia-triad','chapter-check') where hint is not null), 0, 'Formal assessment has no hints');
-select ok(submit_quiz('cia-triad','chapter-check','{"disclosure":["c"],"controls":["backup"]}',
+select ok(submit_quiz('cia-triad','chapter-check','{"disclosure":["c"],"controls":["backup"],"evidence-limit":["o2"],"action-priority":["o1","o2"]}',
   '60000000-0000-4000-8000-000000000012') is not null, 'Formal attempt is recorded below pass mark');
 select is((select completed from chapter_outline('cia-triad') where id='chapter-check'), true, 'A submitted knowledge check completes regardless of answer accuracy');
-select ok(submit_quiz('cia-triad','chapter-check','{"disclosure":["c"],"controls":["restore","backup"]}',
+select ok(submit_quiz('cia-triad','chapter-check','{"disclosure":["c"],"controls":["restore","backup"],"evidence-limit":["o2"],"action-priority":["o2","o1"]}',
   '60000000-0000-4000-8000-000000000013') is not null, 'Exact set is accepted in any order');
 select ok((select passed from quiz_attempts where id='60000000-0000-4000-8000-000000000013'), 'Exact set passes the formal quiz');
 set local request.jwt.claim.sub = '60000000-0000-4000-8000-000000000002';

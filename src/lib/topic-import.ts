@@ -12,6 +12,7 @@ const link = z.strictObject({ label: title, url });
 const checklist = z.strictObject({ id, label: title });
 const question = z.strictObject({
   id, question: text, questionType: z.enum(["single", "multiple", "boolean"]),
+  difficulty: z.enum(["easy", "medium", "hard"]).default("medium"),
   options: z.array(z.strictObject({ id, label: title })).min(2).max(20),
   correctOptionIds: z.array(id).min(1).max(20), explanation: text,
   hint: text.optional(), points: z.number().int().min(1).max(100).default(1),

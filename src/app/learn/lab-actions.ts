@@ -10,11 +10,18 @@ export async function saveLab(chapter: string, activity: string, form: FormData)
   const path = `/learn/${encodeURIComponent(chapter)}?activity=${encodeURIComponent(activity)}`;
   const done = form.get("intent") === "complete";
   const confidence = form.get("confidence");
+  const itemNotes: Record<string, string> = Object.create(null);
+  for (const [name, value] of form) {
+    if (name.startsWith("itemNote:") && typeof value === "string" && value.trim()) {
+      itemNotes[name.slice("itemNote:".length)] = value.trim();
+    }
+  }
   const { data, error } = await client.rpc("save_lab", {
     target_chapter: chapter, target_activity: activity,
     steps: form.getAll("step").filter((value): value is string => typeof value === "string"),
     learner_notes: String(form.get("notes") ?? ""), finish: done,
     confidence: typeof confidence === "string" && confidence ? confidence : null,
+    item_notes: itemNotes,
   });
   if (error || !data) redirect(`${path}&error=${error ? "lab-save" : "lab-checklist"}`);
   revalidatePath("/dashboard");
