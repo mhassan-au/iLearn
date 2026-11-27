@@ -31,6 +31,7 @@ export async function ChapterList({ client, moduleId }: {
       <ol className="space-y-4">
         {chapterRows.map(({ chapter, completed, percent, total, quiz, unavailable }) => {
           const chapterUrl = `/learn/${encodeURIComponent(chapter.id)}`;
+          const showRecap = !unavailable && total > 0 && completed === total && quiz?.completed && quiz.unlocked;
           return (
             <li className="rounded-xl border border-[var(--border)] p-4 flex flex-wrap items-center justify-between gap-5" key={chapter.id}>
               <div className="min-w-0 flex-1 basis-60 space-y-2">
@@ -43,7 +44,7 @@ export async function ChapterList({ client, moduleId }: {
                   </div>
                 )}
               </div>
-              <div className="space-y-1">
+              <div className="flex flex-col items-start gap-2">
                 {quiz?.unlocked ? (
                   <Link className="button" href={`${chapterUrl}?activity=${encodeURIComponent(quiz.id)}`}
                     aria-label={`Take quiz for ${chapter.title}`}>Take quiz</Link>
@@ -53,6 +54,8 @@ export async function ChapterList({ client, moduleId }: {
                     <p className="text-sm">{unavailable ? "Quiz status unavailable" : quiz ? "Complete earlier activities to unlock" : "No chapter quiz published"}</p>
                   </>
                 )}
+                {showRecap && <Link className="button button-secondary" href={`${chapterUrl}?recap=1`}
+                  aria-label={`View chapter recap for ${chapter.title}`}>View chapter recap</Link>}
               </div>
             </li>
           );
