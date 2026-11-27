@@ -6,6 +6,7 @@ import remarkGfm from "remark-gfm";
 import { learningClient } from "../../../lib/learning";
 import { completeLesson } from "../actions";
 import { ActivityVisit } from "../activity-visit";
+import { Quiz } from "../quiz";
 
 type Activity = {
   id: string; title: string; type: string; description: string;
@@ -14,12 +15,12 @@ type Activity = {
 
 export default async function Learn({ params, searchParams }: {
   params: Promise<{ chapter: string }>;
-  searchParams: Promise<{ activity?: string; error?: string }>;
+  searchParams: Promise<{ activity?: string; error?: string; attempt?: string }>;
 }) {
   const [{ chapter }, query] = await Promise.all([params, searchParams]);
   const client = await learningClient();
   const [info, outline] = await Promise.all([
-    client.from("chapters").select("id,title,description").eq("id", chapter).maybeSingle(),
+    client.from("chapters").select("id,title,description,passing_score").eq("id", chapter).maybeSingle(),
     client.rpc("chapter_outline", { target_chapter: chapter }),
   ]);
   if (info.error || outline.error) throw new Error("Could not load chapter");
@@ -75,7 +76,10 @@ export default async function Learn({ params, searchParams }: {
             <p>{current.description}</p>
             {query.error === "completion" && <p role="alert">Completion could not be saved. Please try again.</p>}
             {!current.unlocked ? <p>Complete the earlier modules and required activities to unlock this one.</p>
-              : current.type !== "lesson" ? <p>{current.type.endsWith("Quiz") ? "This quiz will be available when the assessment tools are ready." : "This lab will be available when the lab tools are ready."}</p>
+              : current.type === "shortQuiz" || current.type === "finalQuiz" ? (
+                <Quiz client={client} chapter={chapter} activity={current.id} formal={current.type === "finalQuiz"}
+                  passingScore={info.data.passing_score} attempt={query.attempt} errorCode={query.error} />
+              ) : current.type !== "lesson" ? <p>This lab will be available when the lab tools are ready.</p>
               : lesson ? <>
                 {!!lesson.objectives?.length && <section><h3 className="font-semibold">Learning objectives</h3>
                   <ul className="list-disc pl-6">{lesson.objectives.map((item) => <li key={item}>{item}</li>)}</ul></section>}

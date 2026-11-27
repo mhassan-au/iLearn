@@ -16,6 +16,10 @@ Applied the navigation migration and sample seed to the hosted iLearn project. T
 
 My learning now highlights the most recently accessed unfinished topic and shows its next unlocked activity. The topic overview uses the same resume data, with numerical topic progress and shaded module bars. The resume migration is applied and was verified before and after completing the first sample lesson.
 
+## Milestone 3
+
+Implemented short quizzes and formal assessments with single-answer, multiple-answer, true/false and scenario questions. Grading runs in Postgres, and submitted attempts include the learner's score, answer review and explanations. Short quizzes advance on submission. Final quizzes advance after reaching the chapter pass mark. The quiz migration is applied to iLearn. Transaction-scoped checks verified access, grading and attempt privacy. The full pgTAP runner still requires Docker.
+
 ## Next milestone
 
-The quiz engine adds short quizzes, protected final assessments, server-side grading, retries and attempt history. Lab interactions, progress aggregation, administration and entitlement management follow in their respective milestones.
+Guided and independent lab interactions come next. The sample final quiz remains behind the lab prerequisites in the learner interface. Progress aggregation, administration and entitlement management follow in their respective milestones.
