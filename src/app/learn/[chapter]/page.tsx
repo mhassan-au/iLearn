@@ -12,6 +12,7 @@ import { ActionButton } from "../../components/action-button";
 import { Toast } from "../../components/toast";
 import { ListenToLesson } from "../listen-to-lesson";
 import { QuizRecap } from "../quiz-recap";
+import { ActivityAnnotations, type Annotation } from "../activity-annotations";
 
 type Activity = {
   id: string; title: string; type: string; description: string;
@@ -20,18 +21,21 @@ type Activity = {
 
 export default async function Learn({ params, searchParams }: {
   params: Promise<{ chapter: string }>;
-  searchParams: Promise<{ activity?: string; error?: string; attempt?: string; solution?: string; saved?: string; notice?: string; recap?: string }>;
+  searchParams: Promise<{ activity?: string; error?: string; attempt?: string; solution?: string; saved?: string; notice?: string; recap?: string; note?: string }>;
 }) {
   const [{ chapter }, query] = await Promise.all([params, searchParams]);
   const client = await learningClient();
-  const [info, outline] = await Promise.all([
+  const [info, outline, annotations] = await Promise.all([
     client.from("chapters").select("id,title,description").eq("id", chapter).maybeSingle(),
     client.rpc("chapter_outline", { target_chapter: chapter }),
+    client.from("activity_annotations").select("id,activity_id,quote,text_offset,body")
+      .eq("chapter_id", chapter).order("created_at"),
   ]);
   if (info.error || outline.error) throw new Error("Could not load chapter");
   if (!info.data) notFound();
 
   const activities: Activity[] = outline.data ?? [];
+  const notes: Annotation[] = annotations.data ?? [];
   const open = activities.filter((item) => item.unlocked);
   const itemsDone = activities.filter((item) => item.completed).length;
   const showRecap = query.recap === "1";
@@ -63,7 +67,7 @@ export default async function Learn({ params, searchParams }: {
   return (
     <div className="space-y-6">
       {query.notice === "lesson-complete" && <Toast message="Lesson complete. Your progress is saved." />}
-      {query.notice === "chapter-reset" && <Toast message="Chapter reset. Your lab notes are still saved." />}
+      {query.notice === "chapter-reset" && <Toast message="Chapter reset. Your notes are still saved." />}
       {query.error === "completion" && <Toast tone="error" message="Your lesson completion couldn’t be saved." />}
       {query.error === "chapter-reset" && <Toast tone="error" message="This chapter could not be reset." />}
       <Link href="/topics">All topics</Link>
@@ -77,7 +81,7 @@ export default async function Learn({ params, searchParams }: {
         </label>}
         {!!open.length && <details className="max-w-lg">
           <summary className="cursor-pointer font-semibold text-[var(--accent)]">Reset chapter</summary>
-          <p className="my-3 text-sm">This clears completion, quiz attempts, lab checklists and self-assessments for this chapter. Your lab notes stay. Deleted quiz attempts can’t be recovered, and later modules may lock until you finish again.</p>
+          <p className="my-3 text-sm">This clears completion, quiz attempts, lab checklists and self-assessments for this chapter. Your notes stay. Deleted quiz attempts can’t be recovered, and later modules may lock until you finish again.</p>
           <form action={resetChapter.bind(null, chapter)}>
             <ActionButton className="button button-secondary" pendingLabel="Resetting…">Confirm reset</ActionButton>
           </form>
@@ -97,6 +101,24 @@ export default async function Learn({ params, searchParams }: {
               ? <Link href={recapUrl} aria-current={showRecap ? "page" : undefined}>{recapTitle}</Link>
               : <><span>{recapTitle}</span><small className="block">Unlocks after the final quiz</small></>}
           </div>
+          {!!notes.length && <details className="mt-4 space-y-2 border-t border-[var(--border)] pt-3">
+            <summary className="cursor-pointer font-semibold">Notes ({notes.length})</summary>
+            <ul className="space-y-3">
+              {notes.map((note) => {
+                const activity = activities.find((item) => item.id === note.activity_id);
+                return <li key={note.id} className="text-sm">
+                  <p className="break-words"><strong>{activity?.title ?? "Saved activity"}</strong></p>
+                  {activity?.unlocked
+                    ? <Link className="block break-words" href={`${activityUrl(note.activity_id)}&note=${note.id}#annotated-activity`}>
+                      {note.quote.length > 90 ? `${note.quote.slice(0, 90)}…` : note.quote}
+                    </Link>
+                    : <details><summary className="cursor-pointer break-words">{note.quote.length > 90 ? `${note.quote.slice(0, 90)}…` : note.quote}</summary>
+                      <p className="whitespace-pre-wrap break-words">{note.body}</p>
+                    </details>}
+                </li>;
+              })}
+            </ul>
+          </details>}
         </details>
         <article className="panel min-w-0 space-y-5">
           {showRecap ? <>
@@ -109,8 +131,10 @@ export default async function Learn({ params, searchParams }: {
             <h2>{current.title}</h2>
             <p>{current.description}</p>
             {query.error === "completion" && <p role="alert">Completion could not be saved. Please try again.</p>}
-            {!current.unlocked ? <p>Complete the earlier modules and required activities to unlock this one.</p>
-              : current.type === "shortQuiz" || current.type === "finalQuiz" ? (
+            {!current.unlocked ? <p>Complete the earlier modules and required activities to unlock this one.</p> :
+              <ActivityAnnotations key={current.id} chapter={chapter} activity={current.id}
+                notes={notes.filter((note) => note.activity_id === current.id)} selectedNote={query.note}>
+                {current.type === "shortQuiz" || current.type === "finalQuiz" ? (
                 <Quiz client={client} chapter={chapter} activity={current.id} formal={current.type === "finalQuiz"}
                   attempt={query.attempt} errorCode={query.error} justSubmitted={query.notice === "quiz-submitted"} />
               ) : current.type === "guidedLab" || current.type === "independentLab" ? (
@@ -131,6 +155,7 @@ export default async function Learn({ params, searchParams }: {
                 {current.completed ? <p>Lesson complete</p> :
                   <form action={completeLesson.bind(null, chapter, current.id)}><ActionButton pendingLabel="Saving progress…">Mark complete</ActionButton></form>}
               </> : <p>The lesson is currently unavailable.</p>}
+              </ActivityAnnotations>}
             <nav className="flex flex-wrap gap-5" aria-label="Activity navigation">
               {previous?.unlocked && <Link href={activityUrl(previous.id)}>Previous</Link>}
               {next?.unlocked && <Link href={activityUrl(next.id)}>Next</Link>}

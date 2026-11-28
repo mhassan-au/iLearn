@@ -133,3 +133,11 @@ input:not([type="radio"], [type="checkbox"]), textarea, select { background: var
   color: var(--accent); background: color-mix(in srgb, var(--accent) 12%, var(--surface));
 }
 .lab-note-popover { position: absolute; z-index: 2; inset-inline-end: 0; top: calc(100% + .4rem); width: min(15rem, calc(100vw - 6rem)); padding: .75rem; border: 1px solid var(--border); border-radius: .65rem; background: var(--surface); box-shadow: var(--shadow); }
+.annotation-reader { position: relative; padding-inline-end: 1.9rem; }
+.annotation-marker { position: absolute; inset-inline-end: 0; width: 1.65rem; height: 1.65rem; border: 1px solid var(--accent); border-radius: .35rem; color: var(--accent); background: var(--surface); cursor: pointer; }
+.annotation-marker:hover { background: color-mix(in srgb, var(--accent) 16%, var(--surface)); }
+::highlight(ilearn-notes) { background-color: color-mix(in srgb, var(--accent) 22%, var(--surface)); }
+.annotation-menu, .annotation-selection { position: fixed; z-index: 15; box-shadow: var(--shadow); }
+.annotation-selection { inset-inline-end: 1rem; bottom: 1rem; }
+.annotation-dialog { position: fixed; inset: 0; margin: auto; width: min(34rem, calc(100% - 2rem)); max-height: calc(100% - 2rem); overflow: auto; padding: 1.25rem; border: 1px solid var(--border); border-radius: .85rem; color: var(--ink); background: var(--surface); box-shadow: var(--shadow); }
+.annotation-dialog::backdrop { background: #09183399; }
